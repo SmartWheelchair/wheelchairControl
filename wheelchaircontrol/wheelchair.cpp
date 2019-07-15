@@ -109,11 +109,12 @@ void Wheelchair::ToFSafe_thread()
     ledgeArrayLF[k1] = (*(ToF+1))->readFromOneSensor();
     ledgeArrayRF[k1] = (*(ToF+4))->readFromOneSensor();
 
-    /*for(int i = 0; i < 100; i++)
+    for(int i = 0; i < 100; i++)
     {
         out->printf("%d, ",ledgeArrayRF[i]);
+        wait(1);
     }
-    out->printf("\r\n");*/
+    out->printf("\r\n");
 
     outlierToF[0] = LFTStats.mean() + 2*LFTStats.stdev();
     outlierToF[1] = RFTStats.mean() + 2*RFTStats.stdev();
