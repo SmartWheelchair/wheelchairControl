@@ -23,7 +23,7 @@ int* ToFDataPointer1 = ledgeArrayLF;
 int* ToFDataPointer2 = ledgeArrayRF;
 Statistics LFTStats(ToFDataPointer1, 149, 1);
 Statistics RFTStats(ToFDataPointer2, 149, 1);
-int k1 = 0;
+int k1 = 0;     //Number of samples
 
 int ledgeArrayLB[150];
 int ledgeArrayRB[150];
@@ -31,7 +31,7 @@ int* ToFDataPointer3 = ledgeArrayLB;
 int* ToFDataPointer4 = ledgeArrayRB;
 Statistics LBTStats(ToFDataPointer3, 149, 1);
 Statistics RBTStats(ToFDataPointer4, 149, 1);
-int k2 = 0;
+int k2 = 0;     //Number of samples 
 
 double dist_old, curr_pos;                                                             // Variables for odometry position
 double outlierToF[4];
@@ -95,12 +95,16 @@ void Wheelchair::ToFSafe_thread()
     }
 
     //out->printf("\r\n");
-
+    
     k1++;
 
     if (k1 == 150) {
         k1 = 0;
     }
+   
+   /**************************************************************************
+    *         Ledge Detection for the front Time of Flight Sensors           *
+    **************************************************************************/
 
     ledgeArrayLF[k1] = (*(ToF+1))->readFromOneSensor();
     ledgeArrayRF[k1] = (*(ToF+4))->readFromOneSensor();
@@ -148,8 +152,10 @@ void Wheelchair::ToFSafe_thread()
     else
         forwardSafety = 0;
     
-    ////////////////////////////////////////////////////////////////////////////
-    
+   /*************************************************************************
+    *           Ledge Detection for the Back Time of Flight Sensors         *
+    *************************************************************************/
+
     k2++;
 
     if (k2 == 150) {
@@ -197,8 +203,9 @@ void Wheelchair::ToFSafe_thread()
         backwardSafety = 0;
     
     
-    ////////////////////////////////////////////////////////////////////////////
-
+    /*************************************************************************
+     *               Move wheelchair with joystick on manual mode            *
+     *************************************************************************/
     /*Side Tof begin*/
     int sensor2 = ToFV[2]; //front left side
     int sensor3 = ToFV[3]; //front right side
