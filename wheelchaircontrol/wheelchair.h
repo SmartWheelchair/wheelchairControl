@@ -10,6 +10,9 @@
 #include "Statistics.h"
 #include "Watchdog.h"
 
+/************************************************************************
+ * Ros_lib_kinetic libirary will not be used here; use online compiler! *
+ ************************************************************************/
 //#include <ros.h>
 //#include <geometry_msgs/Twist.h>
 //#include <nav_msgs/Odometry.h>
