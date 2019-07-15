@@ -206,7 +206,7 @@ void Wheelchair::ToFSafe_thread()
     int sensor12 = ToFV[11]; //back
     
     double currAngularVelocity = imu->gyro_x(); //Current angular velocity from IMU
-    double angle = imu->yaw() * 3.14159 / 180; //from IMU, in rads
+    double currentAngle = imu->yaw() * 3.14159 / 180; //from IMU, in rads
     double x = atan(((double)sensor3/10)/ WheelchairRadius);
     double wallAngleLeft = currentAngle + x; //angle from wheelchair to wall on the left side
    
@@ -243,7 +243,7 @@ void Wheelchair::ToFSafe_thread()
         leftSafety = 0;
        }
     //TO EDIT ONCE RIGHT TOF WORKS AGAIN//
-    if((currAngularVelocity * currAngularVelocity > 2 * 
+  /*  if((currAngularVelocity * currAngularVelocity > 2 * 
         maxAngularDeceleration * angle) && (sensor6/10 <= arcLength + 10)) {
         rightSafety = 1; //Not safe to turn right
         out-> printf("Too fast to the right!\n");
