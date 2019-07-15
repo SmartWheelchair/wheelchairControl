@@ -119,11 +119,11 @@ void Wheelchair::ToFSafe_thread()
     }
 
     int sensor0 = ToFV[0];//forward left
-    int sensor3 = ToFV[3];//forward right
-    if(curr_vel < 1 &&((2 * maxDecelerationSlow*sensor1 < curr_vel*curr_vel*1000*1000 ||
+    int sensor4 = ToFV[4];//forward right
+    if(curr_vel < 1 &&((2 * maxDecelerationSlow*sensor0 < curr_vel*curr_vel*1000*1000 ||
                         2 * maxDecelerationSlow*sensor4 < curr_vel*curr_vel*1000*1000) &&
-                       (sensor0 < 1500 || sensor3 < 1500)) ||
-            550 > sensor0 || 550 > sensor3) {
+                       (sensor0 < 1500 || sensor4 < 1500)) ||
+            550 > sensor0 || 550 > sensor4) {
         if(x->read() > def) {
             x->write(def);
             forwardSafety = 1;          // You cannot move forward
@@ -131,9 +131,9 @@ void Wheelchair::ToFSafe_thread()
     }
 
     else if(curr_vel > 1 &&((2 * maxDecelerationFast*sensor0 < curr_vel*curr_vel*1000*1000 ||
-                             2 * maxDecelerationFast*sensor3 < curr_vel*curr_vel*1000*1000) &&
-                            (sensor0 < 1500 || sensor3 < 1500)) ||
-            550 > sensor0 || 550 > sensor3) {
+                             2 * maxDecelerationFast*sensor4 < curr_vel*curr_vel*1000*1000) &&
+                            (sensor0 < 1500 || sensor4 < 1500)) ||
+            550 > sensor0 || 550 > sensor4) {
         if(x->read() > def) {
             x->write(def);
             forwardSafety = 1;          // You cannot move forward
@@ -179,7 +179,7 @@ void Wheelchair::ToFSafe_thread()
     }
 
     else if(curr_vel > 1 &&((2 * maxDecelerationFast*sensor0 < curr_vel*curr_vel*1000*1000 ||
-                             2 * maxDecelerationFast*sensor3 < curr_vel*curr_vel*1000*1000) &&
+                             2 * maxDecelerationFast*sensor4 < curr_vel*curr_vel*1000*1000) &&
                             (sensor6 < 1500 || sensor9 < 1500)) ||
             550 > sensor6 || 550 > sensor9) {
         if(x->read() > def) {
@@ -201,14 +201,16 @@ void Wheelchair::ToFSafe_thread()
 
     /*Side Tof begin*/
     int sensor2 = ToFV[2]; //front left side
-    int sensor5 = ToFV[3]; //front right down
+    int sensor3 = ToFV[3]; //front right side
     int sensor8 = ToFV[8]; //back
     int sensor11 = ToFV[11]; //back
     
     double currAngularVelocity = imu->gyro_x(); //Current angular velocity from IMU
     double currentAngle = imu->yaw() * 3.14159 / 180; //from IMU, in rads
-    double x = atan(((double)sensor2/10)/ WheelchairRadius);
-    double wallAngleLeft = currentAngle + x; //angle from wheelchair to wall on the left side
+    double xL = atan(((double)sensor2/10)/ WheelchairRadius);
+    double xR = atan(((double)sensor3/10)/ WheelchairRadius);
+    double wallAngleLeft = currentAngle + xL; //angle from wheelchair to wall on the left side
+    double wallAngleRight = currentAngle + xR; //angle from wheelchair to wall on the left side
    
     /* Clear the front side first, else continue going straight or can't turn
     After clearing the front sideand movinf forward, check if can clear the back 
@@ -223,7 +225,7 @@ void Wheelchair::ToFSafe_thread()
         leftSafety = 0;
     }
     
-    if(sensor5 <= minWallLength) {
+    if(sensor3 <= minWallLength) {
         rightSafety = 1;
         out-> printf("Detecting wall to the right!\n");
     }
@@ -242,15 +244,14 @@ void Wheelchair::ToFSafe_thread()
     else{
         leftSafety = 0;
        }
-    //TO EDIT ONCE RIGHT TOF WORKS AGAIN//
-  /*  if((currAngularVelocity * currAngularVelocity > 2 * 
-        maxAngularDeceleration * angle) && (sensor6/10 <= arcLength + 10)) {
-        rightSafety = 1; //Not safe to turn right
-        out-> printf("Too fast to the right!\n");
+    if(((currAngularVelocity * currAngularVelocity)/ (2 * maxAngularDeceleration) +
+        currentAngle)>= wallAngleRight && (currAngularVelocity >= 0 && sensor3 <= 1000)){
+        rightSafety = 1; //Not safe to turn left
+        out-> printf("Too fast to the left!\n");
     }
     else{
         rightSafety = 0;
-        }
+       }
     /*Side Tof end*/
     
 }
