@@ -91,10 +91,10 @@ void Wheelchair::ToFSafe_thread()
     int ToFV[12];
     for(int i = 0; i < 6; i++) {                            // Reads from the ToF Sensors
         ToFV[i] = (*(ToF+i))->readFromOneSensor();
-        //out->printf("%d ", ToFV[i]);
+        out->printf("%d ", ToFV[i]);
     }
 
-    //out->printf("\r\n");
+    out->printf("\r\n");
     
     k1++;
 
@@ -118,7 +118,7 @@ void Wheelchair::ToFSafe_thread()
     outlierToF[0] = LFTStats.mean() + 2*LFTStats.stdev();
     outlierToF[1] = RFTStats.mean() + 2*RFTStats.stdev();
 
-    for(int i = 0; i < 4; i++) {                             // Reads from the ToF Sensors
+    for(int i = 0; i < 2; i++) {                             // Reads from the ToF Sensors
         runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
     }
 
@@ -168,7 +168,7 @@ void Wheelchair::ToFSafe_thread()
     outlierToF[2] = LBTStats.mean() + 2*LBTStats.stdev();
     outlierToF[3] = RBTStats.mean() + 2*RBTStats.stdev();
 
-    for(int i = 0; i < 4; i++) {                             // Reads from the ToF Sensors
+    for(int i = 2; i < 4; i++) {                             // Reads from the ToF Sensors
         runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
     }
 
@@ -263,8 +263,6 @@ void Wheelchair::ToFSafe_thread()
     else{
         rightSafety = 0;
        }
-    /*Side Tof end*/
-    
 }
 
 /*************************************************************************
