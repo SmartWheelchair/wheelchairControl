@@ -204,7 +204,7 @@ void Wheelchair::ToFSafe_thread()
     
     
     /*************************************************************************
-     *               Move wheelchair with joystick on manual mode            *
+     *              Side Time of Flight sensors detection                    *
      *************************************************************************/
     /*Side Tof begin*/
     int sensor2 = ToFV[2]; //front left side
@@ -219,9 +219,11 @@ void Wheelchair::ToFSafe_thread()
     double wallAngleLeft = currentAngle + xL; //angle from wheelchair to wall on the left side
     double wallAngleRight = currentAngle + xR; //angle from wheelchair to wall on the left side
    
-    /* Clear the front side first, else continue going straight or can't turn
-    After clearing the front sideand movinf forward, check if can clear the back 
-    when turning */
+    /**********************************************************************************
+     *  Clear the front side first, else continue going straight or can't turn        *
+     *  After clearing the front sideand movinf forward, check if can clear the back  *
+     *  when turning                                                                  *
+     **********************************************************************************/
         
     //When either sensors too close to the wall, can't turn
     if(sensor2 <= minWallLength) {
@@ -240,9 +242,11 @@ void Wheelchair::ToFSafe_thread()
         rightSafety = 0;
     }
     
-    /*Check whether safe to keep turning 
-    Know the exact moment you can stop the chair going at a certain speed before 
-    its too late*/
+    /**********************************************************************************
+     * Check whether safe to keep turning 					      *
+     * Know the exact moment you can stop the chair going at a certain speed before   *
+     * its too late            							      *
+     **********************************************************************************/
     if(((currAngularVelocity * currAngularVelocity)/ (2 * maxAngularDeceleration) +
         currentAngle)>= wallAngleLeft && (currAngularVelocity >= 0 && sensor2 <= 1000)){
         leftSafety = 1; //Not safe to turn left
