@@ -68,7 +68,7 @@ void Wheelchair::velocity_thread()
 void Wheelchair::emergencyButton_thread ()
 {
     while(1) {
-        while(!e_button) {
+        while(e_button) {//change once button is connected
 
             //Stop wheelchair
             Wheelchair::stop();
@@ -118,22 +118,22 @@ void Wheelchair::ToFSafe_thread()
         runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
     }
 
-    int sensor1 = ToFV[0];
-    int sensor4 = ToFV[3];
+    int sensor0 = ToFV[0];//forward left
+    int sensor3 = ToFV[3];//forward right
     if(curr_vel < 1 &&((2 * maxDecelerationSlow*sensor1 < curr_vel*curr_vel*1000*1000 ||
                         2 * maxDecelerationSlow*sensor4 < curr_vel*curr_vel*1000*1000) &&
-                       (sensor1 < 1500 || sensor4 < 1500)) ||
-            550 > sensor1 || 550 > sensor4) {
+                       (sensor0 < 1500 || sensor3 < 1500)) ||
+            550 > sensor0 || 550 > sensor3) {
         if(x->read() > def) {
             x->write(def);
             forwardSafety = 1;          // You cannot move forward
         }
     }
 
-    else if(curr_vel > 1 &&((2 * maxDecelerationFast*sensor1 < curr_vel*curr_vel*1000*1000 ||
-                             2 * maxDecelerationFast*sensor4 < curr_vel*curr_vel*1000*1000) &&
-                            (sensor1 < 1500 || sensor4 < 1500)) ||
-            550 > sensor1 || 550 > sensor4) {
+    else if(curr_vel > 1 &&((2 * maxDecelerationFast*sensor0 < curr_vel*curr_vel*1000*1000 ||
+                             2 * maxDecelerationFast*sensor3 < curr_vel*curr_vel*1000*1000) &&
+                            (sensor0 < 1500 || sensor3 < 1500)) ||
+            550 > sensor0 || 550 > sensor3) {
         if(x->read() > def) {
             x->write(def);
             forwardSafety = 1;          // You cannot move forward
@@ -166,22 +166,22 @@ void Wheelchair::ToFSafe_thread()
         runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
     }
 
-    int sensor7 = ToFV[6];
-    int sensor10 = ToFV[9];
-    if(curr_vel < 1 &&((2 * maxDecelerationSlow*sensor7 < curr_vel*curr_vel*1000*1000 ||
-                        2 * maxDecelerationSlow*sensor10 < curr_vel*curr_vel*1000*1000) &&
-                       (sensor7 < 1500 || sensor10 < 1500)) ||
-            550 > sensor7 || 550 > sensor10) {
+    int sensor6 = ToFV[6];//back left looking forward
+    int sensor9 = ToFV[9];//back right looking forward
+    if(curr_vel < 1 &&((2 * maxDecelerationSlow*sensor6 < curr_vel*curr_vel*1000*1000 ||
+                        2 * maxDecelerationSlow*sensor9 < curr_vel*curr_vel*1000*1000) &&
+                       (sensor6 < 1500 || sensor9 < 1500)) ||
+            550 > sensor6 || 550 > sensor9) {
         if(x->read() > def) {
             x->write(def);
             backwardSafety = 1;          // You cannot move backwards
         }
     }
 
-    else if(curr_vel > 1 &&((2 * maxDecelerationFast*sensor1 < curr_vel*curr_vel*1000*1000 ||
-                             2 * maxDecelerationFast*sensor4 < curr_vel*curr_vel*1000*1000) &&
-                            (sensor7 < 1500 || sensor10 < 1500)) ||
-            550 > sensor7 || 550 > sensor10) {
+    else if(curr_vel > 1 &&((2 * maxDecelerationFast*sensor0 < curr_vel*curr_vel*1000*1000 ||
+                             2 * maxDecelerationFast*sensor3 < curr_vel*curr_vel*1000*1000) &&
+                            (sensor6 < 1500 || sensor9 < 1500)) ||
+            550 > sensor6 || 550 > sensor9) {
         if(x->read() > def) {
             x->write(def);
             backwardSafety = 1;          // You cannot move backwards
@@ -200,14 +200,14 @@ void Wheelchair::ToFSafe_thread()
     ////////////////////////////////////////////////////////////////////////////
 
     /*Side Tof begin*/
-    int sensor3 = ToFV[2]; //front left
-    int sensor6 = ToFV[5]; //front right
-    int sensor9 = ToFV[8]; //back
-    int sensor12 = ToFV[11]; //back
+    int sensor2 = ToFV[2]; //front left side
+    int sensor5 = ToFV[3]; //front right down
+    int sensor8 = ToFV[8]; //back
+    int sensor11 = ToFV[11]; //back
     
     double currAngularVelocity = imu->gyro_x(); //Current angular velocity from IMU
     double currentAngle = imu->yaw() * 3.14159 / 180; //from IMU, in rads
-    double x = atan(((double)sensor3/10)/ WheelchairRadius);
+    double x = atan(((double)sensor2/10)/ WheelchairRadius);
     double wallAngleLeft = currentAngle + x; //angle from wheelchair to wall on the left side
    
     /* Clear the front side first, else continue going straight or can't turn
@@ -215,7 +215,7 @@ void Wheelchair::ToFSafe_thread()
     when turning */
         
     //When either sensors too close to the wall, can't turn
-    if(sensor3 <= minWallLength) {
+    if(sensor2 <= minWallLength) {
         leftSafety = 1;
         out-> printf("Detecting wall to the left!\n");
     }
@@ -223,7 +223,7 @@ void Wheelchair::ToFSafe_thread()
         leftSafety = 0;
     }
     
-    if(sensor6 <= minWallLength) {
+    if(sensor5 <= minWallLength) {
         rightSafety = 1;
         out-> printf("Detecting wall to the right!\n");
     }
@@ -235,7 +235,7 @@ void Wheelchair::ToFSafe_thread()
     Know the exact moment you can stop the chair going at a certain speed before 
     its too late*/
     if(((currAngularVelocity * currAngularVelocity)/ (2 * maxAngularDeceleration) +
-        currentAngle)>= wallAngleLeft && (currAngularVelocity >= 0 && sensor3 <= 1000)){
+        currentAngle)>= wallAngleLeft && (currAngularVelocity >= 0 && sensor2 <= 1000)){
         leftSafety = 1; //Not safe to turn left
         out-> printf("Too fast to the left!\n");
     }
