@@ -207,8 +207,8 @@ void Wheelchair::ToFSafe_thread()
     
     double currAngularVelocity = imu->gyro_x(); //Current angular velocity from IMU
     double angle = imu->yaw() * 3.14159 / 180; //from IMU, in rads
-    double arcLength = WheelchairRadius * currAngularVelocity * 
-                       currAngularVelocity / (2 * maxAngularDeceleration); //S = r*Ө, in cm
+    double x = atan(((double)sensor3/10)/ WheelchairRadius);
+    double wallAngleLeft = currentAngle + x; //angle from wheelchair to wall on the left side
    
     /* Clear the front side first, else continue going straight or can't turn
     After clearing the front sideand movinf forward, check if can clear the back 
@@ -234,8 +234,8 @@ void Wheelchair::ToFSafe_thread()
     /*Check whether safe to keep turning 
     Know the exact moment you can stop the chair going at a certain speed before 
     its too late*/
-    if((currAngularVelocity * currAngularVelocity > 2 * 
-        maxAngularDeceleration * angle) && (sensor3/10 <= arcLength + 10)) {
+    if(((currAngularVelocity * currAngularVelocity)/ (2 * maxAngularDeceleration) +
+        currentAngle)>= wallAngleLeft && (currAngularVelocity >= 0 && sensor3 <= 1000)){
         leftSafety = 1; //Not safe to turn left
         out-> printf("Too fast to the left!\n");
     }
@@ -250,40 +250,6 @@ void Wheelchair::ToFSafe_thread()
     else{
         rightSafety = 0;
         }
-      
-    //Safe to continue turning 
-    //Check if can turn left and back side sensors
-    // Staring t road and frequenctly checking
-    //Check the back sensor
-    /*int sensor7 = ToFV[0]; //back sensor NOTTT SURE
-    int sensor8 = ToFV[3]; //back sensor
-    
-    if(curr_vel < 1 &&((2 * maxDecelerationSlow*sensor7 < curr_vel*curr_vel*1000*1000 || 
-    2 * maxDecelerationSlow*sensor8 < curr_vel*curr_vel*1000*1000) && 
-    (sensor7 < 1500 || sensor8 < 1500)) ||
-    550 > sensor7 || 550 > sensor8)
-    {
-        //out->printf("i am in danger\r\n");
-        if(x->read() > def)
-        {
-            x->write(def);
-            backwardSafety = 1;// You cannot move backward
-        }
-    }
-    //When going to fast to stop from wall
-    else if(curr_vel > 1 &&((2 * maxDecelerationFast*sensor7 < curr_vel*curr_vel*1000*1000 || 
-    2 * maxDecelerationFast*sensor8 < curr_vel*curr_vel*1000*1000) && 
-    (sensor7 < 1500 || sensor8 < 1500)) ||
-    550 > sensor7 || 550 > sensor8)
-    {
-        //out->printf("i am in danger\r\n");
-        if(x->read() > def)
-        {
-            x->write(def);
-            backwardSafety = 1;
-        }
-    }*/
-      
     /*Side Tof end*/
     
 }
