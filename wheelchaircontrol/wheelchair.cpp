@@ -242,6 +242,7 @@ void Wheelchair::ToFSafe_thread()
     else{
         leftSafety = 0;
        }
+    //TO EDIT ONCE RIGHT TOF WORKS AGAIN//
     if((currAngularVelocity * currAngularVelocity > 2 * 
         maxAngularDeceleration * angle) && (sensor6/10 <= arcLength + 10)) {
         rightSafety = 1; //Not safe to turn right
