@@ -119,9 +119,12 @@ void Wheelchair::ToFSafe_thread()
     outlierToF[0] = LFTStats.mean() + 2*LFTStats.stdev();
     outlierToF[1] = RFTStats.mean() + 2*RFTStats.stdev();
 
-    for(int i = 0; i < 2; i++) {                             // Reads from the ToF Sensors
-        runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
-    }
+//     for(int i = 0; i < 2; i++) {                             // Reads from the ToF Sensors
+//         runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
+//     }
+    
+    runningAverage[0] = ((runningAverage[0]*(4) + ToFV[0]) / 5);    // Take running average from LF Angled Sensor
+    runningAverage[1] = ((runningAverage[1]*(4) + ToFV[5]) / 5);    // Take running average from RF Angled Sensor
 
     int sensor0 = ToFV[0];//forward left
     int sensor4 = ToFV[4];//forward right
@@ -169,9 +172,11 @@ void Wheelchair::ToFSafe_thread()
     outlierToF[2] = LBTStats.mean() + 2*LBTStats.stdev();
     outlierToF[3] = RBTStats.mean() + 2*RBTStats.stdev();
 
-    for(int i = 2; i < 4; i++) {                             // Reads from the ToF Sensors
-        runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
-    }
+//     for(int i = 2; i < 4; i++) {                             // Reads from the ToF Sensors
+//         runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
+//     }
+    runningAverage[2] = ((runningAverage[2]*(4) + ToFV[7]) / 5);    // Take running average from LB Angled Sensor
+    runningAverage[3] = ((runningAverage[3]*(4) + ToFV[10]) / 5);    // Take running average from RB Angled Sensor
 
     int sensor6 = ToFV[6];//back left looking forward
     int sensor9 = ToFV[9];//back right looking forward
