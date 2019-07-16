@@ -176,7 +176,7 @@ void Wheelchair::ToFSafe_thread()
 //         runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
 //     }
     runningAverage[2] = ((runningAverage[2]*(4) + ToFV[7]) / 5);    // Take running average from LB Angled Sensor
-    runningAverage[3] = ((runningAverage[3]*(4) + ToFV[10]) / 5);    // Take running average from RB Angled Sensor
+    runningAverage[3] = ((runningAverage[3]*(4) + ToFV[10]) / 5);   // Take running average from RB Angled Sensor
 
     int sensor6 = ToFV[6];//back left looking forward
     int sensor9 = ToFV[9];//back right looking forward
