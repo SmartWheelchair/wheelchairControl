@@ -244,9 +244,9 @@ void Wheelchair::ToFSafe_thread()
     }
     
     /**********************************************************************************
-     * Check whether safe to keep turning 					      *
+     * Check whether safe to keep turning 					                          *
      * Know the exact moment you can stop the chair going at a certain speed before   *
-     * its too late            							      *
+     * its too late            							                              *
      **********************************************************************************/
     if(((currAngularVelocity * currAngularVelocity)/ (2 * maxAngularDeceleration) +
         currentAngle)>= wallAngleLeft && (currAngularVelocity >= 0 && sensor2 <= 1000)){
@@ -259,7 +259,7 @@ void Wheelchair::ToFSafe_thread()
     if(((currAngularVelocity * currAngularVelocity)/ (2 * maxAngularDeceleration) +
         currentAngle)>= wallAngleRight && (currAngularVelocity >= 0 && sensor3 <= 1000)){
         rightSafety = 1; //Not safe to turn left
-        out-> printf("Too fast to the left!\n");
+        out-> printf("Too fast to the right!\n");
     }
     else{
         rightSafety = 0;
