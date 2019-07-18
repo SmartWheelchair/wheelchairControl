@@ -48,7 +48,9 @@
 #define  maxAngularDeceleration 1.04 //found through testing, max 
                                      //acceleration at which chair can 
                                      //stop while turning. In rads per sec
-#define minWallLength 10 // minimum distance from wall to ToF (cm)
+#define minWallLength 100 // minimum distance from wall to ToF (mm)
+#define minBlindSpot 520 //Minimm distance from object in blindspot (mm).
+						 //Got from triangle hypothenuse eqn
 /*************************************************************************
 *                                                                        *
 *                         Wheelchair class                               *

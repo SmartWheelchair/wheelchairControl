@@ -217,7 +217,10 @@ void Wheelchair::ToFSafe_thread()
     int sensor3 = ToFV[3]; //front right side
     int sensor8 = ToFV[8]; //back
     int sensor11 = ToFV[11]; //back
-    
+
+	int sensor12 = ToFV[1066]; //front side angle (assuming right???)
+	int sensor13 = ToFV[1067]; //front side angle (assuming left????)
+
     double currAngularVelocity = imu->gyro_x(); //Current angular velocity from IMU
     double currentAngle = imu->yaw() * 3.14159 / 180; //from IMU, in rads
     double xL = atan(((double)sensor2/10)/ WheelchairRadius);
@@ -230,17 +233,19 @@ void Wheelchair::ToFSafe_thread()
      *  After clearing the front sideand movinf forward, check if can clear the back  *
      *  when turning                                                                  *
      **********************************************************************************/
-        
+     
+	//ADDED SENSOR13 in the OR logic
     //When either sensors too close to the wall, can't turn
-    if(sensor2 <= minWallLength) {
+    if(sensor2 <= minWallLength || sensor13 <= minBlindSpot) {
         leftSafety = 1;
         out-> printf("Detecting wall to the left!\n");
     }
     else{
         leftSafety = 0;
     }
-    
-    if(sensor3 <= minWallLength) {
+   
+    //ADDED SENSOR12 in the or logic
+    if(sensor3 <= minWallLength || sensor12 <= minBlindSpot) {
         rightSafety = 1;
         out-> printf("Detecting wall to the right!\n");
     }
@@ -251,7 +256,7 @@ void Wheelchair::ToFSafe_thread()
     /**********************************************************************************
      * Check whether safe to keep turning 					                          *
      * Know the exact moment you can stop the chair going at a certain speed before   *
-     * its too late            							                              *
+     * its too late. Predict the estimated distance to crash and stop before.           							                              *
      **********************************************************************************/
     if(((currAngularVelocity * currAngularVelocity)/ (2 * maxAngularDeceleration) +
         currentAngle)>= wallAngleLeft && (currAngularVelocity >= 0 && sensor2 <= 1000)){
@@ -262,7 +267,7 @@ void Wheelchair::ToFSafe_thread()
         leftSafety = 0;
        }
     if(((currAngularVelocity * currAngularVelocity)/ (2 * maxAngularDeceleration) +
-        currentAngle)>= wallAngleRight && (currAngularVelocity >= 0 && sensor3 <= 1000)){
+        currentAngle)>= wallAngleRight && (currAngularVelocity <= 0 && sensor3 <= 1000)){
         rightSafety = 1; //Not safe to turn left
         out-> printf("Too fast to the right!\n");
     }
