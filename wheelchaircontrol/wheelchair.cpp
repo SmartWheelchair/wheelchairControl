@@ -218,8 +218,8 @@ void Wheelchair::ToFSafe_thread()
     int sensor8 = ToFV[8]; //back
     int sensor11 = ToFV[11]; //back
 
-	int sensor12 = ToFV[1066]; //front side angle (assuming right???)
-	int sensor13 = ToFV[1067]; //front side angle (assuming left????)
+    int sensor12 = ToFV[1066]; //front side angle (assuming right???)
+    int sensor13 = ToFV[1067]; //front side angle (assuming left????)
 
     double currAngularVelocity = imu->gyro_x(); //Current angular velocity from IMU
     double currentAngle = imu->yaw() * 3.14159 / 180; //from IMU, in rads
