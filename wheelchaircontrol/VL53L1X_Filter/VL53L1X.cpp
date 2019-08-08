@@ -31,9 +31,9 @@ VL53L1X::VL53L1X(PinName SDA, PinName SCL, PinName shutDown) :
 void VL53L1X::setAddress(uint8_t new_addr)
 {
   writeReg(I2C_SLAVE__DEVICE_ADDRESS, new_addr & 0x7F);
-  wait(.01);
-  ////printf("%x\r\n", readReg(I2C_SLAVE__DEVICE_ADDRESS));
+  wait(.02);
   address = new_addr << 1;
+  printf("%x\r\n", readReg(I2C_SLAVE__DEVICE_ADDRESS));
 }
  
 // Initialize sensor using settings taken mostly from VL53L1_DataInit() and
@@ -59,17 +59,16 @@ bool VL53L1X::init(bool io_2v8)
  
   startTimeout();
   int firmware = (readReg16Bit(FIRMWARE__SYSTEM_STATUS));
-  //printf("firmware : %x\r\n", firmware);
+  printf("firmware : %x\r\n", firmware);
   while ((readReg(FIRMWARE__SYSTEM_STATUS) & 0x01) == 0)
   {
-    //printf("stuck\r\n");
+    printf("stuck\r\n");
     if (checkTimeoutExpired())
     {
       did_timeout = true;
       return false;
     }
   }
-
   // VL53L1_poll_for_boot_completion() end
  
   // VL53L1_software_reset() end
@@ -152,7 +151,7 @@ bool VL53L1X::init(bool io_2v8)
  
   // default to long range, 50 ms timing budget
   // note that this is different than what the API defaults to
-  setDistanceMode(Long);
+  setDistanceMode(Short);
   setMeasurementTimingBudget(50000);
  
   // VL53L1_StaticInit() end
@@ -237,8 +236,8 @@ uint16_t VL53L1X::readReg16Bit(uint16_t registerAddr)
   char data_read[2];
   data_write[0] = (registerAddr >> 8) & 0xFF; //MSB of register address 
   data_write[1] = registerAddr & 0xFF; //LSB of register address 
-  _i2c.write(address, data_write, 2, 0); 
-  _i2c.read(address,data_read,2, 1);
+  _i2c.write(address, data_write, 2,0);
+  _i2c.read(address,data_read,2,1);
   data_high = data_read[0]; //Read Data from selected register
   data_low = data_read[1]; //Read Data from selected register
   data = (data_high << 8)|data_low;
@@ -246,24 +245,22 @@ uint16_t VL53L1X::readReg16Bit(uint16_t registerAddr)
   return data;
 }
 // Read a 32-bit register
-uint32_t VL53L1X::readReg32Bit(uint16_t registerAddr)
+uint32_t VL53L1X::readReg32Bit(uint16_t reg)
 {
-  uint8_t data_low;
-  uint8_t data_high;
-  uint16_t data;
+  uint32_t value;
+/*
+  _i2c.beginTransmission(address);
+  _i2c.write((reg >> 8) & 0xFF); // reg high byte
+  _i2c.write( reg       & 0xFF); // reg low byte
+  last_status = _i2c.endTransmission();
  
-  char data_write[2];
-  char data_read[2];
-  data_write[0] = (registerAddr >> 8) & 0xFF; //MSB of register address 
-  data_write[1] = registerAddr & 0xFF; //LSB of register address 
-  _i2c.write(address, data_write, 2,0); 
-  _i2c.read(address,data_read,2,1);
-  data_high = data_read[0]; //Read Data from selected register
-  data_low = data_read[1]; //Read Data from selected register
-  data = (data_high << 8)|data_low;
-  
-    return data;
-
+  _i2c.requestFrom(address, (uint8_t)4);
+  value  = (uint32_t)_i2c.read() << 24; // value highest byte
+  value |= (uint32_t)_i2c.read() << 16;
+  value |= (uint16_t)_i2c.read() <<  8;
+  value |=           _i2c.read();       // value lowest byte
+*/
+  return value;
 }
  
 // set distance mode to Short, Medium, or Long
@@ -491,7 +488,7 @@ uint16_t VL53L1X::read(bool blocking)
   getRangingData();
  
   writeReg(SYSTEM__INTERRUPT_CLEAR, 0x01); // sys_interrupt_clear_range
- 
+
   return ranging_data.range_mm;
 }
  
@@ -821,15 +818,6 @@ uint32_t VL53L1X::calcMacroPeriod(uint8_t vcsel_period)
   return macro_period_us;
 }
 
-
-
-
-
-
-
-
-
-
 bool VL53L1X::initReading(int addr, int timing_budget)
 {
   turnOn();
@@ -839,7 +827,7 @@ bool VL53L1X::initReading(int addr, int timing_budget)
     didInitialize = false;
     return false;
   }
-  setDistanceMode(VL53L1X::Long);//Short Medium Long
+ // setDistanceMode(VL53L1X::Short);//Short Medium Long
   setAddress(addr);//change I2C address for next sensor
   setMeasurementTimingBudget(timing_budget);//min 20ms for Short, 33ms for Medium and Long
   startContinuous(50);

@@ -66,7 +66,7 @@ VL53L1X* ToF[12] = {&sensor1, &sensor2, &sensor3, &sensor4, &sensor5, &sensor6,
 &sensor7, &sensor8, &sensor9, &sensor10, &sensor11, &sensor12}; // Puts ToF sensor pointers into an array
 VL53L1X** ToFT = ToF;
 
-/**************************************************************************
+/***h***********************************************************************
  *                          Thread Definitions                            *
  **************************************************************************/
 
