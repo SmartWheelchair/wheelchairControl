@@ -27,7 +27,7 @@ PwmOut on(PE_6);                        // Turn Wheelchair On
 PwmOut off(PE_5);                       // Turn Wheelchair Off
 
 //Watchdog limit should be 0.1; Set to 1 for Testing Only
-double watchdogLimit = 1;               // Set timeout limit for watchdog timer in seconds
+double watchdogLimit = 1000000;               // Set timeout limit for watchdog timer in seconds
 int buttonCheck = 0;
 int iteration = 1;
 
@@ -185,7 +185,7 @@ int main(void)
         
         t.stop();
         //pc.printf("Time elapsed: %f seconds, Iteration = %d\n", t.read(), iteration);
-        dog.Service();                                                          // Service the Watchdog so it does not cause a system reset - "Kicking"/"Feeding" the dog
+        dog.Service();                                                          // Service the Watchdog so it does not cause a system reset - "Kicking"/"Feeding" the
 
     }
 }

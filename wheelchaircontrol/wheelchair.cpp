@@ -31,14 +31,18 @@ int* ToFDataPointer3 = ledgeArrayLB;
 int* ToFDataPointer4 = ledgeArrayRB;
 Statistics LBTStats(ToFDataPointer3, 149, 1);
 Statistics RBTStats(ToFDataPointer4, 149, 1);
-int k2 = 0;     //Number of samples 
+int k2 = 0;     //Number of samples
 
 double dist_old, curr_pos;                                                             // Variables for odometry position
 double outlierToF[4];
+double sensors3;
+volatile double wallDistance = 497;
+                          // Reads from the ToF Sensors
 
 /*************************************************************************
 *                        Creating PID objects                            *
 **************************************************************************/
+PID PIDFollowRight(&sensors3, &vOutS, &wallDistance, 5.5, .002, .002, P_ON_E, DIRECT);
 PID myPID(&pid_yaw, &Output, &Setpoint, 5.5, .00, 0.0036, P_ON_E, DIRECT);             // Angle PID object constructor
 PID myPIDDistance(&Input, &Output, &Setpoint, 5.5, .00, 0.002, P_ON_E, DIRECT);        // Distance PID object constructor
 PID PIDVelosity(&vIn, &vOut, &vDesired, 5.5, .00, .002, P_ON_E, DIRECT);               // Velosity PID Constructor
@@ -88,20 +92,30 @@ void Wheelchair::emergencyButton_thread ()
 **************************************************************************/
 void Wheelchair::ToFSafe_thread()
 {
-    int ToFV[12];
-    for(int i = 0; i < 6; i++) {                            // Reads from the ToF Sensors
+    wait(0.01);
+    for(int i = 0; i < 12; i++) {                            // Reads from the ToF Sensors
         ToFV[i] = (*(ToF+i))->readFromOneSensor();
-        out->printf("%d ", ToFV[i]);
+        out->printf("ToF %d: %d \n", i ,ToFV[i]);
     }
+    //RIGHT SIDE
+    //ToF 3 -> Down pointing ToF
+    //ToF 5 -> Forward pointing ToF
+    //ToF 4 -> Side pointing ToF
+
+    //LEFT SIDE
+    //ToF 2 -> Side pointing ToF
+    //ToF 1 -> Forward pointing ToF
+    //ToF 0 -> Down pointing ToF
+
 
     out->printf("\r\n");
-    
+
     k1++;
 
     if (k1 == 150) {
         k1 = 0;
     }
-   
+
    /**************************************************************************
     *         Ledge Detection for the front Time of Flight Sensors           *
     **************************************************************************/
@@ -109,29 +123,27 @@ void Wheelchair::ToFSafe_thread()
     ledgeArrayLF[k1] = (*(ToF+1))->readFromOneSensor();
     ledgeArrayRF[k1] = (*(ToF+4))->readFromOneSensor();
 
-    for(int i = 0; i < 100; i++)
-    {
-        out->printf("%d, ",ledgeArrayRF[i]);
-        wait(1);
-    }
-    out->printf("\r\n");
+    //for(int i = 0; i < 100; i++)
+    //{
+    //    out->printf("%d, ",ledgeArrayRF[i]);
+    //    wait(0.05);
+    //}
+    //out->printf("\r\n");
 
     outlierToF[0] = LFTStats.mean() + 2*LFTStats.stdev();
     outlierToF[1] = RFTStats.mean() + 2*RFTStats.stdev();
 
-//     for(int i = 0; i < 2; i++) {                             // Reads from the ToF Sensors
-//         runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
-//     }
-    
-    runningAverage[0] = ((runningAverage[0]*(4) + ToFV[0]) / 5);    // Take running average from LF Angled Sensor
-    runningAverage[1] = ((runningAverage[1]*(4) + ToFV[5]) / 5);    // Take running average from RF Angled Sensor
+    for(int i = 0; i < 2; i++) {                             // Reads from the ToF Sensors
+        runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
+    }
 
     int sensor0 = ToFV[0];//forward left
-    int sensor4 = ToFV[4];//forward right
+    int sensor5 = ToFV[5];//forward right
+    sensors3 = ToFV[4];
     if(curr_vel < 1 &&((2 * maxDecelerationSlow*sensor0 < curr_vel*curr_vel*1000*1000 ||
-                        2 * maxDecelerationSlow*sensor4 < curr_vel*curr_vel*1000*1000) &&
-                       (sensor0 < 1500 || sensor4 < 1500)) ||
-            550 > sensor0 || 550 > sensor4) {
+                        2 * maxDecelerationSlow*sensor5 < curr_vel*curr_vel*1000*1000) &&
+                       (sensor0 < 1500 || sensor5 < 1500)) ||
+            550 > sensor0 || 550 > sensor5) {
         if(x->read() > def) {
             x->write(def);
             forwardSafety = 1;          // You cannot move forward
@@ -139,9 +151,9 @@ void Wheelchair::ToFSafe_thread()
     }
 
     else if(curr_vel > 1 &&((2 * maxDecelerationFast*sensor0 < curr_vel*curr_vel*1000*1000 ||
-                             2 * maxDecelerationFast*sensor4 < curr_vel*curr_vel*1000*1000) &&
-                            (sensor0 < 1500 || sensor4 < 1500)) ||
-            550 > sensor0 || 550 > sensor4) {
+                             2 * maxDecelerationFast*sensor5 < curr_vel*curr_vel*1000*1000) &&
+                            (sensor0 < 1500 || sensor5 < 1500)) ||
+            550 > sensor0 || 550 > sensor5) {
         if(x->read() > def) {
             x->write(def);
             forwardSafety = 1;          // You cannot move forward
@@ -150,7 +162,7 @@ void Wheelchair::ToFSafe_thread()
 
     else if ((runningAverage[0] > outlierToF[0]) || (runningAverage[1] > outlierToF[1])) {
         forwardSafety = 1;
-        out->printf("I'M STOPPING BECAUSE OF A FRONT LEDGE\r\n");
+        //out->printf("I'M STOPPING BECAUSE OF A FRONT LEDGE\r\n");
     }
 
     else
@@ -172,11 +184,9 @@ void Wheelchair::ToFSafe_thread()
     outlierToF[2] = LBTStats.mean() + 2*LBTStats.stdev();
     outlierToF[3] = RBTStats.mean() + 2*RBTStats.stdev();
 
-//     for(int i = 2; i < 4; i++) {                             // Reads from the ToF Sensors
-//         runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
-//     }
-    runningAverage[2] = ((runningAverage[2]*(4) + ToFV[7]) / 5);    // Take running average from LB Angled Sensor
-    runningAverage[3] = ((runningAverage[3]*(4) + ToFV[10]) / 5);   // Take running average from RB Angled Sensor
+    for(int i = 2; i < 4; i++) {                             // Reads from the ToF Sensors
+        runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
+    }
 
     int sensor6 = ToFV[6];//back left looking forward
     int sensor9 = ToFV[9];//back right looking forward
@@ -191,7 +201,7 @@ void Wheelchair::ToFSafe_thread()
     }
 
     else if(curr_vel > 1 &&((2 * maxDecelerationFast*sensor0 < curr_vel*curr_vel*1000*1000 ||
-                             2 * maxDecelerationFast*sensor4 < curr_vel*curr_vel*1000*1000) &&
+                             2 * maxDecelerationFast*sensor5 < curr_vel*curr_vel*1000*1000) &&
                             (sensor6 < 1500 || sensor9 < 1500)) ||
             550 > sensor6 || 550 > sensor9) {
         if(x->read() > def) {
@@ -202,78 +212,80 @@ void Wheelchair::ToFSafe_thread()
 
     else if ((runningAverage[2] > outlierToF[2]) || (runningAverage[3] > outlierToF[3])) {
         backwardSafety = 1;
-        out->printf("I'M STOPPING BECAUSE OF A BACK LEDGE\r\n");
+        //out->printf("I'M STOPPING BECAUSE OF A BACK LEDGE\r\n");
     }
 
     else
         backwardSafety = 0;
-    
-    
+
+
     /*************************************************************************
      *              Side Time of Flight sensors detection                    *
      *************************************************************************/
     /*Side Tof begin*/
     int sensor2 = ToFV[2]; //front left side
-    int sensor3 = ToFV[3]; //front right side
+    int sensor4 = ToFV[4]; //front right side
     int sensor8 = ToFV[8]; //back
     int sensor11 = ToFV[11]; //back
-
-    int sensor12 = ToFV[1066]; //front side angle (assuming right???)
-    int sensor13 = ToFV[1067]; //front side angle (assuming left????)
-
+    /*
     double currAngularVelocity = imu->gyro_x(); //Current angular velocity from IMU
     double currentAngle = imu->yaw() * 3.14159 / 180; //from IMU, in rads
     double xL = atan(((double)sensor2/10)/ WheelchairRadius);
-    double xR = atan(((double)sensor3/10)/ WheelchairRadius);
+    double xR = atan(((double)ToFV[3]/10)/ WheelchairRadius);
     double wallAngleLeft = currentAngle + xL; //angle from wheelchair to wall on the left side
     double wallAngleRight = currentAngle + xR; //angle from wheelchair to wall on the left side
-   
+   */
     /**********************************************************************************
      *  Clear the front side first, else continue going straight or can't turn        *
      *  After clearing the front sideand movinf forward, check if can clear the back  *
      *  when turning                                                                  *
      **********************************************************************************/
-     
-	//ADDED SENSOR13 in the OR logic
+        
     //When either sensors too close to the wall, can't turn
-    if(sensor2 <= minWallLength || sensor13 <= minBlindSpot) {
+    if(sensor2 <= minWallLength) {
         leftSafety = 1;
-        out-> printf("Detecting wall to the left!\n");
+        //out-> printf("Detecting wall to the left!\n");
+
     }
     else{
         leftSafety = 0;
     }
-   
-    //ADDED SENSOR12 in the or logic
-    if(sensor3 <= minWallLength || sensor12 <= minBlindSpot) {
+    
+    if(ToFV[4] <= minWallLength) {
         rightSafety = 1;
-        out-> printf("Detecting wall to the right!\n");
+        //out-> printf("Detecting wall to the right!\n");
+
     }
     else {
         rightSafety = 0;
     }
+    sensors3 = ToFV[4];
     
+    /*********************Extra line of code for testing***********************/
+
     /**********************************************************************************
-     * Check whether safe to keep turning 					                          *
+     * Check whether safe to keep turning       *
      * Know the exact moment you can stop the chair going at a certain speed before   *
-     * its too late. Predict the estimated distance to crash and stop before.           							                              *
+     * its too late                  *
      **********************************************************************************/
+     /*
     if(((currAngularVelocity * currAngularVelocity)/ (2 * maxAngularDeceleration) +
         currentAngle)>= wallAngleLeft && (currAngularVelocity >= 0 && sensor2 <= 1000)){
         leftSafety = 1; //Not safe to turn left
-        out-> printf("Too fast to the left!\n");
+        //out-> printf("Too fast to the left!\n");
     }
     else{
         leftSafety = 0;
        }
     if(((currAngularVelocity * currAngularVelocity)/ (2 * maxAngularDeceleration) +
-        currentAngle)>= wallAngleRight && (currAngularVelocity <= 0 && sensor3 <= 1000)){
+        currentAngle)>= wallAngleRight && (currAngularVelocity <= 0 && ToFV[3] <= 1000)){
         rightSafety = 1; //Not safe to turn left
-        out-> printf("Too fast to the right!\n");
+       // out-> printf("Too fast to the right!\n");
     }
     else{
         rightSafety = 0;
        }
+       */
 }
 
 /*************************************************************************
@@ -294,9 +306,10 @@ Wheelchair::Wheelchair(PinName xPin, PinName yPin, Serial* pc, Timer* time, QEI*
     /* Initializes IMU Library */
     out = pc;                                                                           // "out" is called for serial monitor
     out->printf("on\r\n");
-    imu = new IMUWheelchair(pc, time);
+   // imu = new IMUWheelchair(pc, time);
+   // imu = new BNO080Wheelchair(pc, D4, D5, D10, D8, 0x4b, 100000);
     Wheelchair::stop();                                                                 // Wheelchair is initially stationary
-    imu->setup();                                                                       // turns on the IMU
+    //imu->setup();                                                                       // turns on the IMU
     wheelS = qeiS;                                                                      // "wheel" is called for encoder
     wheel = qei;
     ToF = ToFT;                                                                         // passes pointer with addresses of ToF sensors
@@ -398,14 +411,14 @@ void Wheelchair::stop()
 **************************************************************************/
 void Wheelchair::pid_right(int deg)
 {
-    bool overturn = false;                                                              // Boolean if angle over 360˚
+    bool overturn = false;                                                              // Boolean if angle over 360
 
     out->printf("pid right\r\r\n");
     x->write(def);                                                                      // Update x sent to chair to be stationary
     Setpoint = curr_yaw + deg;                                                          // Relative angle we want to turn
     pid_yaw = curr_yaw;                                                                 // Sets pid_yaw to angle input from user
 
-    /* Turns on overturn boolean if setpoint over 360˚ */
+    /* Turns on overturn boolean if setpoint over 360 */
     if(Setpoint > 360) {
         overturn = true;
     }
@@ -416,7 +429,7 @@ void Wheelchair::pid_right(int deg)
 
     /* PID stops when approaching a litte less than desired angle */
     while(pid_yaw < Setpoint - 3) {
-        /* PID is set to correct angle range if angle greater than 360˚*/
+        /* PID is set to correct angle range if angle greater than 360*/
         if(overturn && curr_yaw < Setpoint-deg-1) {
             pid_yaw = curr_yaw + 360;
         } else {
@@ -431,7 +444,7 @@ void Wheelchair::pid_right(int deg)
         out->printf("curr_yaw %f\r\r\n", curr_yaw);
         out->printf("Setpoint = %f \r\n", Setpoint);
 
-        wait(.05);                                                                      // Small delay (milliseconds)
+        //wait(.05);                                                                      // Small delay (milliseconds)
     }
 
     /* Saftey stop for wheelchair */
@@ -446,14 +459,14 @@ void Wheelchair::pid_right(int deg)
 **************************************************************************/
 void Wheelchair::pid_left(int deg)
 {
-    bool overturn = false;                                                              //Boolean if angle under 0˚
+    bool overturn = false;                                                              //Boolean if angle under 0
 
     out->printf("pid Left\r\r\n");
     x->write(def);                                                                      // Update x sent to chair to be stationary
     Setpoint = curr_yaw - deg;                                                          // Relative angle we want to turn
     pid_yaw = curr_yaw;                                                                 // Sets pid_yaw to angle input from user
 
-    /* Turns on overturn boolean if setpoint less than 0˚ */
+    /* Turns on overturn boolean if setpoint less than 0 */
     if(Setpoint < 0) {
         overturn = true;
     }
@@ -464,7 +477,7 @@ void Wheelchair::pid_left(int deg)
 
     /* PID stops when approaching a litte more than desired angle */
     while(pid_yaw > Setpoint+3) {
-        /* PID is set to correct angle range if angle less than 0˚ */
+        /* PID is set to correct angle range if angle less than 0 */
         if(overturn && curr_yaw > Setpoint+deg+1) {
             pid_yaw = curr_yaw - 360;
         } else {
@@ -561,7 +574,7 @@ void Wheelchair::pid_forward(double mm)
 **************************************************************************/
 double Wheelchair::getTwistZ()
 {
-    return imu->gyro_z();
+  //  return imu->gyro_z();
 }
 
 /*************************************************************************
@@ -631,7 +644,6 @@ void Wheelchair::pid_twistV()
 
     while(1) {
         linearV = .7;
-        test1 = linearV*100;
         vel = curr_vel;
         vDesired = linearV*100;
         if(out->readable())
@@ -683,7 +695,71 @@ void Wheelchair::pid_twistV()
         wait(.01);                                                                      // Small delay (milliseconds)
     }
 }
+void Wheelchair::pid_wall_follower()
+{
+    out->printf("Inside pid_wall_follower()\n");
 
+    /* Initializes variables as default */
+    double temporV = def;
+    double temporS = def+offset;
+    wallDistance = 450;
+    x->write(def);
+    y->write(def);
+    /* Sets the constants for P and D */
+    PIDVelosity.SetTunings(.0005,0, 0.00);
+    PIDFollowRight.SetTunings(.005,0.000001, 0.000001);
+
+    /* Limits to the range specified */
+    PIDVelosity.SetOutputLimits(-.005, .005);
+    PIDFollowRight.SetOutputLimits(-.002, .002);
+
+    /* PID mode: Direct */
+    PIDVelosity.SetControllerDirection(DIRECT);
+    PIDFollowRight.SetControllerDirection(DIRECT);
+
+    while(1) {
+        linearV = .5;
+        vel = curr_vel;
+        vDesired = linearV*100;
+        if(out->readable())
+            return;
+        /* Update and set all variable so that the chair is stationary
+        * if the velocity is zero
+        */
+
+        if(vDesired >= 0) {
+            PIDVelosity.SetTunings(.000004,0, 0.00);                                    // Sets the constants for P and D
+            PIDVelosity.SetOutputLimits(-.002, .002);                                   // Limits to the range specified
+        } else {
+            PIDVelosity.SetTunings(.000015,0, 0.00);                                    // Sets the constants for P and D
+            PIDVelosity.SetOutputLimits(-.0005, .0005);                                 // Limits to range specified
+        }
+
+        /* Sets maximum value of variable to 1 */
+        if(temporV >= 1) {
+            temporV = 1;
+        }
+        /* Scales and makes some adjustments to velocity */
+        vIn = curr_vel*100;
+        PIDVelosity.Compute();
+        PIDFollowRight.Compute();
+        if(forwardSafety == 0) {
+            temporV += vOut;
+            temporS += vOutS;
+
+            /* Updates x,y sent to Wheelchair and for Odometry message in ROS */
+            x->write(temporV);
+            y->write(temporS);
+        } else {
+            x->write(def);
+            y->write(def);
+        }
+        //out->printf("Velosity: %f, Velosity2: %f, temporV %f, temporS %f\r\n", curr_vel, curr_velS, temporV, temporS);
+        wait(.01);                                                                      // Small delay (milliseconds)
+    }
+
+
+}
 /*************************************************************************
 * This method calculates the relative position of the chair everytime the*
 * encoders reset by setting its old position as the origin to calculate  *

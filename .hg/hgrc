@@ -1,6 +1,6 @@
 # example repository config (see 'hg help config' for more info)
 [paths]
-default = https://jvfausto@os.mbed.com/teams/Affordable-Smart-Wheelchair/code/Version1-6/
+default = https://t1jain@os.mbed.com/teams/Affordable-Smart-Wheelchair/code/Version1-8/
 
 # path aliases to other clones of this repo in URLs or filesystem paths
 # (see 'hg help config.paths' for more info)
@@ -12,3 +12,5 @@ default = https://jvfausto@os.mbed.com/teams/Affordable-Smart-Wheelchair/code/Ve
 [ui]
 # name and email (local to this repository, optional), e.g.
 # username = Jane Doe <jdoe@example.com>
+[ui]
+ignore.local = .hg/hgignore

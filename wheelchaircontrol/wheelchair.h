@@ -3,21 +3,18 @@
 /*************************************************************************
 *            Importing libraries into wheelchair.h                       *
 **************************************************************************/
-#include "IMUWheelchair.h"
+#include "BNO080Wheelchair.h"
 #include "PID.h"
 #include "QEI.h"
 #include "VL53L1X.h"
 #include "Statistics.h"
 #include "Watchdog.h"
 
-/************************************************************************
- * Ros_lib_kinetic libirary will not be used here; use online compiler! *
- ************************************************************************/
-//#include <ros.h>
-//#include <geometry_msgs/Twist.h>
-//#include <nav_msgs/Odometry.h>
-//#include <std_msgs/Float64.h>
-//#include <std_msgs/Float64MultiArray.h>
+#include <ros.h>
+#include <geometry_msgs/Twist.h>
+#include <nav_msgs/Odometry.h>
+#include <std_msgs/Float64.h>
+#include <std_msgs/Float64MultiArray.h>
 
 /*************************************************************************
 * Joystick has analog out of 200-700, scale values between 1.3 and 3.3   *
@@ -44,13 +41,11 @@
 /*************************************************************************
 *IMU definitions for turning wheelchair
 **************************************************************************/
-#define WheelchairRadius 80 //distance from IMU to edge of wheelchair(cm)
-#define  maxAngularDeceleration 1.04 //found through testing, max 
-                                     //acceleration at which chair can 
-                                     //stop while turning. In rads per sec
-#define minWallLength 100 // minimum distance from wall to ToF (mm)
-#define minBlindSpot 520 //Minimm distance from object in blindspot (mm).
-						 //Got from triangle hypothenuse eqn
+#define WheelchairRadius 80             //distance from IMU to edge of wheelchair(cm)
+#define  maxAngularDeceleration 1.04    //found through testing, max 
+                                        //acceleration at which chair can 
+                                        //stop while turning. In rads per sec
+#define minWallLength 10                // minimum distance from wall to ToF (cm)
 /*************************************************************************
 *                                                                        *
 *                         Wheelchair class                               *
@@ -108,6 +103,8 @@ public:
     *   wheechair using the encoder values this is being obatined.           *
     ************************************************************************ */
     void velocity_thread();
+
+    void pid_wall_follower();
 
     //not being used
     void rosCom_thread();
@@ -222,10 +219,10 @@ public:
     double vel;
     double test1, test2;
     bool forwardSafety;
-    bool backwardSafety;//Check if can move backward
-    bool leftSafety; //to check if can turn left
-    bool rightSafety; //to check if can turn right
-    double curr_yaw, curr_velS;// Variable that contains current relative angle
+    bool backwardSafety;        //Check if can move backward
+    bool leftSafety;            //to check if can turn left
+    bool rightSafety;           //to check if can turn right
+    double curr_yaw, curr_velS; // Variable that contains current relative angle
 
 private:
     /************************************************************************
@@ -243,15 +240,15 @@ private:
     PwmOut* on;
     PwmOut* off;
 
-    DigitalIn* e_button;                //Pointer to e_button
+    DigitalIn* e_button;                // Pointer to e_button
 
-    IMUWheelchair* imu;                  // Pointer to IMU
+    BNO080Wheelchair* imu;                 // Pointer to IMU
     Serial* out;                        // Pointer to Serial Monitor
     Timer* ti;                          // Pointer to the timer
     QEI* wheel;                         // Pointer to encoder
     QEI* wheelS;                        // Pointer to encoder
     VL53L1X** ToF;                      // Arrays of pointers to ToF sensors
-
+    int ToFV[12];
 
 };
 #endif
