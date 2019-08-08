@@ -76,11 +76,11 @@ void Wheelchair::emergencyButton_thread ()
 
             //Stop wheelchair
             Wheelchair::stop();
-            printf("E-button has been pressed\r\n");
+            //printf("E-button has been pressed\r\n");
             off->write(high);                              // Turn off PCB
             on->write(0);                                  // Make sure PCB not on
             //Reset Board
-            NVIC_SystemReset();
+            //NVIC_SystemReset();
 
         }
 
