@@ -76,11 +76,11 @@ void Wheelchair::emergencyButton_thread ()
 
             //Stop wheelchair
             Wheelchair::stop();
-            //printf("E-button has been pressed\r\n");
+            printf("E-button has been pressed\r\n");
             off->write(high);                              // Turn off PCB
             on->write(0);                                  // Make sure PCB not on
             //Reset Board
-            //NVIC_SystemReset();
+            NVIC_SystemReset();
 
         }
 
@@ -97,6 +97,9 @@ void Wheelchair::ToFSafe_thread()
         ToFV[i] = (*(ToF+i))->readFromOneSensor();
         out->printf("ToF %d: %d \n", i ,ToFV[i]);
     }
+
+    out->printf("Encoder 2 TEST = %f\n", wheel->getDistance(53.975));
+    out->printf("Encoder 1 TEST = %f\n", wheelS->getDistance(53.975));
     //RIGHT SIDE
     //ToF 3 -> Down pointing ToF
     //ToF 5 -> Forward pointing ToF
@@ -557,7 +560,11 @@ void Wheelchair::pid_forward(double mm)
         }
 
         Input = wheel->getDistance(53.975);                                             // Gets distance from Encoder into PID
+        out->printf("Encoder = %f\n", Input);
+        //out->printf(Input);
         wait(.05);                                                                      // Slight Delay: *****Test without
+
+
         myPIDDistance.Compute();                                                        // Compute distance traveled by chair
 
         tempor = Output + def;                                                          // Temporary output variable
@@ -574,6 +581,7 @@ void Wheelchair::pid_forward(double mm)
 **************************************************************************/
 double Wheelchair::getTwistZ()
 {
+	return 0;
   //  return imu->gyro_z();
 }
 
