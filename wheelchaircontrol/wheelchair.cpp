@@ -289,6 +289,41 @@ void Wheelchair::ToFSafe_thread()
         rightSafety = 0;
        }
        */
+    /**********************************************************************************
+     * 						INWARD/POLE TIME OF FLIGHT SENSOR CODE                    *
+     **********************************************************************************/
+
+    	// Safe to continue turning
+        // Check if can turn left and back side sensors
+        // Staring t road and frequently checking
+        // Check the back sensor
+
+        /*
+			int sensor13 = ToFV[?]; 		//Pole ToF 1 - LEFT
+			int sensor14 = ToFV[?]; 		//Pole ToF 2 - RIGHT
+
+			if(sensor13 < SOME_VAL)
+			{
+				out->printf("There's a pole on the LEFT!\r\n");
+
+				if(x->read() > def)
+				{
+					x->write(def);
+					leftSafety = 1;// You cannot move backward
+				}
+			}
+
+			else if(sensor14 < SOME_VAL)
+			{
+				out->printf("There's a pole on the RIGHT!\r\n");
+
+				if(x->read() > def)
+				{
+					x->write(def);
+					rightSafety = 1;
+				}
+			}
+        */
 }
 
 /*************************************************************************
