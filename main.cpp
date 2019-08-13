@@ -69,25 +69,29 @@ VL53L1X* ToF[12] = {&sensor1, &sensor2, &sensor3, &sensor4, &sensor5, &sensor6,
  *                      ToF ARRAY ASSIGNMENTS
  *           (from the perspective of user seated on wheelchair)
  *
+ *   Each ToF has a 3 letter name, the first indicates left/right, the
+ *   second front/back, and third, the specific ToF sensor
+ *   eg: LBB means Left side, Back end, Bottom ToF
+ *
  *   FRONT - LEFT
- *   ToF 10	- Top (Angle)
- *   ToF 9	- Bottom (Front)
- *   ToF 11	- Side
+ *   ToF 10	- Top (Angle)		LFT
+ *   ToF 9	- Bottom (Front)	LFB
+ *   ToF 11	- Side				LFS
  *
  *   FRONT - RIGHT
- *   ToF 8	- Top (Angle)
- *   ToF 7	- Bottom (Front)
- *   ToF 6	- Side
+ *   ToF 8	- Top (Angle)		RFT
+ *   ToF 7	- Bottom (Front)	RFB
+ *   ToF 6	- Side				RFS
  *
  *   BACK - LEFT
- *   ToF 3	- Side
- *   ToF 4	- Top
- *   ToF 5	- Bottom
+ *   ToF 3	- Side				LBS
+ *   ToF 4	- Top (Angle)		LBT
+ *   ToF 5	- Bottom			LBB
  *
  *   BACK - RIGHT
- *   ToF 1	- Side
- *   ToF 2	- Top
- *   ToF 0	- Bottom
+ *   ToF 1	- Side				RBS
+ *   ToF 2	- Top (Angle)		RBT
+ *   ToF 0	- Bottom			RBB
  *
  **************************************************************************/
 
