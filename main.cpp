@@ -65,6 +65,32 @@ VL53L1X sensor12(PD_13, PD_12, PE_14);
 VL53L1X* ToF[12] = {&sensor1, &sensor2, &sensor3, &sensor4, &sensor5, &sensor6, 
 &sensor7, &sensor8, &sensor9, &sensor10, &sensor11, &sensor12}; // Puts ToF sensor pointers into an array
 
+/**************************************************************************
+ *                      ToF ARRAY ASSIGNMENTS
+ *           (from the perspective of user seated on wheelchair)
+ *
+ *   FRONT - LEFT
+ *   ToF 10	- Top (Angle)
+ *   ToF 9	- Bottom (Front)
+ *   ToF 11	- Side
+ *
+ *   FRONT - RIGHT
+ *   ToF 8	- Top (Angle)
+ *   ToF 7	- Bottom (Front)
+ *   ToF 6	- Side
+ *
+ *   BACK - LEFT
+ *   ToF 3	- Side
+ *   ToF 4	- Top
+ *   ToF 5	- Bottom
+ *
+ *   BACK - RIGHT
+ *   ToF 1	- Side
+ *   ToF 2	- Top
+ *   ToF 0	- Bottom
+ *
+ **************************************************************************/
+
 //
 /*
 VL53L1X sensor1(PF_0, PF_1, PG_12);   // Block 1

@@ -151,7 +151,7 @@ bool VL53L1X::init(bool io_2v8)
  
   // default to long range, 50 ms timing budget
   // note that this is different than what the API defaults to
-  setDistanceMode(Short);
+  setDistanceMode(Long);
   setMeasurementTimingBudget(50000);
  
   // VL53L1_StaticInit() end
@@ -827,7 +827,7 @@ bool VL53L1X::initReading(int addr, int timing_budget)
     didInitialize = false;
     return false;
   }
- // setDistanceMode(VL53L1X::Short);//Short Medium Long
+  setDistanceMode(VL53L1X::Long);//Short Medium Long
   setAddress(addr);//change I2C address for next sensor
   setMeasurementTimingBudget(timing_budget);//min 20ms for Short, 33ms for Medium and Long
   startContinuous(50);

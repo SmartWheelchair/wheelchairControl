@@ -95,23 +95,37 @@ void Wheelchair::ToFSafe_thread()
     wait(0.01);
     for(int i = 0; i < 12; i++) {                            // Reads from the ToF Sensors
         ToFV[i] = (*(ToF+i))->readFromOneSensor();
-        out->printf("ToF %d: %d \n", i ,ToFV[i]);
+        out->printf("%d\t", ToFV[i]);
     }
+    out->printf("\n");
+    //out->printf("Encoder 2 TEST = %f\n", wheel->getDistance(53.975));
+    //out->printf("Encoder 1 TEST = %f\n", wheelS->getDistance(53.975));
 
-    out->printf("Encoder 2 TEST = %f\n", wheel->getDistance(53.975));
-    out->printf("Encoder 1 TEST = %f\n", wheelS->getDistance(53.975));
-    //RIGHT SIDE
-    //ToF 3 -> Down pointing ToF
-    //ToF 5 -> Forward pointing ToF
-    //ToF 4 -> Side pointing ToF
-
-    //LEFT SIDE
-    //ToF 2 -> Side pointing ToF
-    //ToF 1 -> Forward pointing ToF
-    //ToF 0 -> Down pointing ToF
-
-
-    out->printf("\r\n");
+    /**************************************************************************
+     *                      ToF ARRAY ASSIGNMENTS
+     *           (from the perspective of user seated on wheelchair)
+     *
+     *   FRONT - LEFT
+     *   ToF 10	- Top (Angle)
+     *   ToF 9	- Bottom (Front)
+     *   ToF 11	- Side
+     *
+     *   FRONT - RIGHT
+     *   ToF 8	- Top (Angle)
+     *   ToF 7	- Bottom (Front)
+     *   ToF 6	- Side
+     *
+     *   BACK - LEFT
+     *   ToF 3	- Side
+     *   ToF 4	- Top
+     *   ToF 5	- Bottom
+     *
+     *   BACK - RIGHT
+     *   ToF 1	- Side
+     *   ToF 2	- Top
+     *   ToF 0	- Bottom
+     *
+     **************************************************************************/
 
     k1++;
 
