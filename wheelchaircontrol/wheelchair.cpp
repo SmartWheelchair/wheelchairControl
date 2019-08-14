@@ -452,10 +452,10 @@ void Wheelchair::move(float x_coor, float y_coor)
 void Wheelchair::forward()
 {
     //printf("current velosity; %f, curr vel S %f\r\n", curr_vel, curr_velS);
-  //  if(forwardSafety == 0) {
+    if(forwardSafety == 0) {
     x->write(high);
     y->write(def);
-    //}
+    }
     //out->printf("%f, %f\r\n", curr_pos, wheelS->getDistance(53.975));
 }
 
@@ -464,10 +464,10 @@ void Wheelchair::forward()
 **************************************************************************/
 void Wheelchair::backward()
 {
-    //if (backwardSafety == 0) {
+    if (backwardSafety == 0) {
         x->write(low);
         y->write(def);
-    //}
+    }
 }
 /*************************************************************************
 *   Automatic mode: move right and update x,y coordinate sent to chair   *
@@ -475,10 +475,10 @@ void Wheelchair::backward()
 void Wheelchair::right()
 {
     //if safe to move, from ToFSafety
-   // if(rightSafety == 0) {
+    if(rightSafety == 0) {
         x->write(def);
         y->write(low);
-    //}
+    }
 }
 /*************************************************************************
 *   Automatic mode: move left and update x,y coordinate sent to chair   *
@@ -486,10 +486,10 @@ void Wheelchair::right()
 void Wheelchair::left()
 {
     //if safe to move, from ToFSafety
-    //if(leftSafety == 0) {
+    if(leftSafety == 0) {
         x->write(def);
         y->write(high);
-    //}
+    }
 }
 /*************************************************************************
 *                           Stop the wheelchair                          *
