@@ -255,8 +255,8 @@ void Wheelchair::ToFSafe_thread()
     int LBS = ToFV[3];      	//left side on back
     int RBS = ToFV[1];      	//right side on back
 
-    int angleRight = ToFV[0];   //The angled sensor for blindspots
-    int angleLeft = ToFV[1];
+    int angleRight = ToFV[100];   //The angled sensor for blindspots
+    int angleLeft = ToFV[101];
 
     /*			TEMPORARY COMMENTING WHILE IMU DISABLED
 
