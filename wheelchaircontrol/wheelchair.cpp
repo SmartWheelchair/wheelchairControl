@@ -186,7 +186,7 @@ void Wheelchair::ToFSafe_thread()
 
     else if ((runningAverage[0] > outlierToF[0]) || (runningAverage[1] > outlierToF[1])) {
         forwardSafety = 1;
-        //out->printf("I'M STOPPING BECAUSE OF A FRONT LEDGE\r\n");
+        out->printf("I'M STOPPING BECAUSE OF A FRONT LEDGE\r\n");
     }
 
     else
@@ -239,39 +239,46 @@ void Wheelchair::ToFSafe_thread()
 
     else if ((runningAverage[2] > outlierToF[2]) || (runningAverage[3] > outlierToF[3])) {
         backwardSafety = 1;
-        //out->printf("I'M STOPPING BECAUSE OF A BACK LEDGE\r\n");
+        out->printf("I'M STOPPING BECAUSE OF A BACK LEDGE\r\n");
     }
 
     else
         backwardSafety = 0;
-
 
     /*************************************************************************
      *              Side Time of Flight sensors detection                    *
      *************************************************************************/
 
     /*Side Tof begin*/
-    int LFS = ToFV[11];      	//front left
-    int RFS = ToFV[6];      	//front right
+    //int LFS = ToFV[11];      	//front left	//already declared
+    //int RFS = ToFV[6];      	//front right	//already declared
     int LBS = ToFV[3];      	//left side on back
     int RBS = ToFV[1];      	//right side on back
 
-    int angleRight = ToFV[100];   //The angled sensor for blindspots
-    int angleLeft = ToFV[101];
+    int angleRight = ToFV[0];   //The angled sensor for blindspots
+    int angleLeft = ToFV[1];
+
+    /*			TEMPORARY COMMENTING WHILE IMU DISABLED
 
     double currAngularVelocity = imu->gyro_x(); //Current angular velocity from IMU
-    double angle = imu->yaw() * 3.14159 / 180; //from IMU, in rads
+    double angle = imu->yaw() * 3.14159 / 180; 	//from IMU, in rads
     double arcLength = WheelchairRadius * currAngularVelocity *
                        currAngularVelocity / (2 * maxAngularDeceleration); //S = r*theta, in cm
+	*/
+
+    // UNCOMMENT ABOVE WHEN IMU ENABLED
+    double currAngularVelocity = 0;
+    double angle = 0;
+    double arcLength = 0;
 
     /* Clear the front side first, else continue going straight or can't turn
-    After clearing the front sideand movinf forward, check if can clear the back
+    After clearing the front side and moving forward, check if can clear the back
     when turning */
 
     //When either sensors too close to the wall, can't turn
     if(LFS <= minWallLength) {
         leftSafety = 1;
-        out-> printf("Detecting wall to the left!\n");
+        out->printf("Detecting wall to the left!\n");
     }
     else{
         leftSafety = 0;
@@ -279,7 +286,7 @@ void Wheelchair::ToFSafe_thread()
     
     if(RFS <= minWallLength) {
         rightSafety = 1;
-        out-> printf("Detecting wall to the right!\n");
+        out->printf("Detecting wall to the right!\n");
     }
     else {
         rightSafety = 0;
@@ -291,7 +298,7 @@ void Wheelchair::ToFSafe_thread()
     //The back right side sensor say too close and corner get bumped
     if(RBS <= minWallLength) {
         leftSafety = 1;
-        out-> printf("Detecting wall to the right at back! Don't turn left. \n");
+        out->printf("Detecting wall to the right at back! Don't turn left. \n");
     }
     else {
         leftSafety = 0;
@@ -301,7 +308,7 @@ void Wheelchair::ToFSafe_thread()
     //The back left side sensor say too close and corner get bumped
      if(LBS <= minWallLength) {
         rightSafety = 1;
-        out-> printf("Detecting wall to the left at back! Don't turn right. \n");
+        out->printf("Detecting wall to the left at back! Don't turn right. \n");
     }
     else {
         rightSafety = 0;
@@ -311,15 +318,15 @@ void Wheelchair::ToFSafe_thread()
     //the side sensors
     if(angleLeft <= 100000) {
         leftSafety = 1;
-        out-> printf("Blindspot on the left side\n");
+        out->printf("Blindspot on the left side\n");
     }
     else{
         leftSafety = 0;
     }
 
-    if(angleRight <= 100000) {
+    if(angleRight <= 100000) {	//Number needs to be changed based on testing
         rightSafety = 1;
-        out-> printf("Blindspot on the right side\n");
+        out->printf("Blindspot on the right side\n");
     }
     else{
         rightSafety = 0;
@@ -332,7 +339,7 @@ void Wheelchair::ToFSafe_thread()
     if((currAngularVelocity * currAngularVelocity > 2 *
         maxAngularDeceleration * angle) && (LFS/10 <= arcLength + 10)) {
         leftSafety = 1; //Not safe to turn left
-        out-> printf("Too fast to the left!\n");
+        out->printf("Too fast to the left!\n");
     }
     else{
         leftSafety = 0;
@@ -340,7 +347,7 @@ void Wheelchair::ToFSafe_thread()
     if((currAngularVelocity * currAngularVelocity > 2 *
         maxAngularDeceleration * angle) && (RFS/10 <= arcLength + 10)) {
         rightSafety = 1; //Not safe to turn right
-        out-> printf("Too fast to the right!\n");
+        out->printf("Too fast to the right!\n");
     }
     else{
         rightSafety = 0;
@@ -371,11 +378,12 @@ void Wheelchair::ToFSafe_thread()
     //In the blindspot of the side sensor, keep wheelchair from turning if detect in
     //that blind area. Account from certain distance from the angled sensor and how
     //fast turning/moving toward obstacle.
-    f
+    //f
+
      if((currAngularVelocity * currAngularVelocity > 2 *
         maxAngularDeceleration * angle) && (angleLeft/10 <= arcLength + 10)) {
         leftSafety = 1; //Not safe to turn left
-        out-> printf("Too fast to the left!, blindspot \n");
+        out->printf("Too fast to the left!, blindspot \n");
     }
     else{
         leftSafety = 0;
@@ -383,7 +391,7 @@ void Wheelchair::ToFSafe_thread()
     if((currAngularVelocity * currAngularVelocity > 2 *
         maxAngularDeceleration * angle) && (angleRight/10 <= arcLength + 10)) {
         rightSafety = 1; //Not safe to turn right
-        out-> printf("Too fast to the right!, blindspot \n");
+        out->printf("Too fast to the right!, blindspot \n");
     }
     else{
         rightSafety = 0;
@@ -410,10 +418,10 @@ Wheelchair::Wheelchair(PinName xPin, PinName yPin, Serial* pc, Timer* time, QEI*
     /* Initializes IMU Library */
     out = pc;                                                                           // "out" is called for serial monitor
     out->printf("on\r\n");
-   // imu = new IMUWheelchair(pc, time);
-   // imu = new BNO080Wheelchair(pc, D4, D5, D10, D8, 0x4b, 100000);
+//    imu = new IMUWheelchair(pc, time);
+//    imu = new BNO080Wheelchair(pc, D4, D5, D10, D8, 0x4b, 100000);
     Wheelchair::stop();                                                                 // Wheelchair is initially stationary
-    //imu->setup();                                                                       // turns on the IMU
+//    imu->setup();                                                                       // turns on the IMU
     wheelS = qeiS;                                                                      // "wheel" is called for encoder
     wheel = qei;
     ToF = ToFT;                                                                         // passes pointer with addresses of ToF sensors
