@@ -89,7 +89,7 @@ int main(void)
     nh.advertise(chatter2);
     nh.subscribe(sub); */
     
-    pc.printf("Before Starting\r\n");
+	pc.printf("Before Starting\r\n");
     
     //queue.call_every(SAMPLEFREQ, &smart, &Wheelchair::compass_thread);        // Sets up sampling frequency of the compass thread
     queue.call_every(SAMPLEFREQ, &smart, &Wheelchair::velocity_thread);         // Sets up sampling frequency of the velocity thread
@@ -115,9 +115,8 @@ int main(void)
         if( pc.readable()) {
             set = 1;
             char c = pc.getc();                                                 // Read the instruction sent
-            if( c == 'w') {
+            if( c == 'e') {
                 smart.forward();                                                // Move foward
-
             }
             else if( c == 'a') {
                 smart.left();                                                   // Turn left

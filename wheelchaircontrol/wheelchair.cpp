@@ -67,6 +67,7 @@ void Wheelchair::velocity_thread()
     curr_vel = wheel->getVelocity();
     curr_velS = wheelS->getVelocity();
     curr_pos = wheel->getDistance(53.975);
+    curr_pos = wheelS->getDistance(53.975);
 }
 
 void Wheelchair::emergencyButton_thread ()
@@ -95,7 +96,7 @@ void Wheelchair::ToFSafe_thread()
     wait(0.01);
     for(int i = 0; i < 12; i++) {                            // Reads from the ToF Sensors
         ToFV[i] = (*(ToF+i))->readFromOneSensor();
-        out->printf("ToF %d: %d \n", i ,ToFV[i]);
+        //out->printf("%d ",ToFV[i]);
     }
     //RIGHT SIDE
     //ToF 3 -> Down pointing ToF
@@ -108,7 +109,7 @@ void Wheelchair::ToFSafe_thread()
     //ToF 0 -> Down pointing ToF
 
 
-    out->printf("\r\n");
+    //out->printf("\r\n");
 
     k1++;
 
@@ -356,11 +357,11 @@ void Wheelchair::move(float x_coor, float y_coor)
 void Wheelchair::forward()
 {
     //printf("current velosity; %f, curr vel S %f\r\n", curr_vel, curr_velS);
-    if(forwardSafety == 0) {
-        x->write(high);
-        y->write(def+offset);
-    }
-    out->printf("%f, %f\r\n", curr_pos, wheelS->getDistance(53.975));
+  //  if(forwardSafety == 0) {
+    x->write(high);
+    y->write(def);
+    //}
+    //out->printf("%f, %f\r\n", curr_pos, wheelS->getDistance(53.975));
 }
 
 /*************************************************************************
@@ -368,10 +369,10 @@ void Wheelchair::forward()
 **************************************************************************/
 void Wheelchair::backward()
 {
-    if (backwardSafety == 0) {
+    //if (backwardSafety == 0) {
         x->write(low);
         y->write(def);
-    }
+    //}
 }
 /*************************************************************************
 *   Automatic mode: move right and update x,y coordinate sent to chair   *
@@ -379,10 +380,10 @@ void Wheelchair::backward()
 void Wheelchair::right()
 {
     //if safe to move, from ToFSafety
-    if(rightSafety == 0) {
+   // if(rightSafety == 0) {
         x->write(def);
         y->write(low);
-    }
+    //}
 }
 /*************************************************************************
 *   Automatic mode: move left and update x,y coordinate sent to chair   *
@@ -390,10 +391,10 @@ void Wheelchair::right()
 void Wheelchair::left()
 {
     //if safe to move, from ToFSafety
-    if(leftSafety == 0) {
+    //if(leftSafety == 0) {
         x->write(def);
         y->write(high);
-    }
+    //}
 }
 /*************************************************************************
 *                           Stop the wheelchair                          *

@@ -62,7 +62,7 @@ bool VL53L1X::init(bool io_2v8)
   printf("firmware : %x\r\n", firmware);
   while ((readReg(FIRMWARE__SYSTEM_STATUS) & 0x01) == 0)
   {
-    printf("stuck\r\n");
+    //printf("Stuck %d\r\n", readReg(FIRMWARE__SYSTEM_STATUS) & 0x01));
     if (checkTimeoutExpired())
     {
       did_timeout = true;
@@ -827,7 +827,7 @@ bool VL53L1X::initReading(int addr, int timing_budget)
     didInitialize = false;
     return false;
   }
- // setDistanceMode(VL53L1X::Short);//Short Medium Long
+  setDistanceMode(VL53L1X::Long);//Short Medium Long
   setAddress(addr);//change I2C address for next sensor
   setMeasurementTimingBudget(timing_budget);//min 20ms for Short, 33ms for Medium and Long
   startContinuous(50);

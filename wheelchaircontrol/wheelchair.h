@@ -20,7 +20,7 @@
 * Joystick has analog out of 200-700, scale values between 1.3 and 3.3   *
 * Here are some global constants for joystick                            *
 **************************************************************************/
-#define def (2.5f/3.3f)                 // Default axis on joystick to stay neutral; used on x and y axis
+#define def (2.55f/3.3f)                 // Default axis on joystick to stay neutral; used on x and y axis
 #define high 3.3f/3.3f                  // High power on joystick; used on x and y axis
 #define low (1.7f/3.3f)                 // Low power on joystick; used on x and y axis
 #define offset .03f                     // Joystick adjustment to be able to go straight. Chair dependent on manufactoring precision
@@ -29,8 +29,8 @@
 /*************************************************************************
 *Pin plug-in for Nucleo-L432KC/Compatible with Nucleo-400 series (F767ZI)*
 **************************************************************************/
-#define xDir PA_6                       // PWM Pins 
-#define yDir PA_5
+#define yDir PA_5                       // PWM Pins
+#define xDir PA_6
 #define Encoder1 D7                     // Digital In Pull Up Pin 
 #define Encoder2 D8
 #define Diameter 31.75                  // Diameter of encoder wheel
