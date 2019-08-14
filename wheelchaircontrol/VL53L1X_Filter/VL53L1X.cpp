@@ -151,7 +151,7 @@ bool VL53L1X::init(bool io_2v8)
  
   // default to long range, 50 ms timing budget
   // note that this is different than what the API defaults to
-  setDistanceMode(Short);
+  setDistanceMode(Long);
   setMeasurementTimingBudget(50000);
  
   // VL53L1_StaticInit() end

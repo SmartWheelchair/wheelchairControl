@@ -8,13 +8,13 @@ Serial pc(USBTX, USBRX, 57600);         // Serial Monitor
  *                      Encoder Pins & Variables                          *
  **************************************************************************/
  
-QEI wheel (D10, D9, NC, 1200);          // Initializes right encoder
-DigitalIn pt3(D10, PullUp);             // Pull up resistors to read analog signals into digital signals
-DigitalIn pt4(D9, PullUp);
+QEI wheelS (D9, D10, NC, 1200);          	// Initializes right encoder
+DigitalIn pt1(D10, PullUp);             	// Pull up resistors to read analog signals into digital signals
+DigitalIn pt2(D9, PullUp);
 
-QEI wheelS (D7, D8, NC, 1200);          // Initializes Left encoder
-DigitalIn pt1(D7, PullUp);              // Pull up resistors to read analog signals into digital signals
-DigitalIn pt2(D8, PullUp);
+QEI wheel (PF_12, PF_13, NC, 1200);         // Initializes Left encoder
+DigitalIn pt3(PF_12, PullUp);        		// Pull up resistors to read analog signals into digital signals
+DigitalIn pt4(PF_13, PullUp);
 
 int max_velocity;
 
@@ -64,9 +64,66 @@ VL53L1X sensor12(PD_13, PD_12, PE_14);
 
 VL53L1X* ToF[12] = {&sensor1, &sensor2, &sensor3, &sensor4, &sensor5, &sensor6, 
 &sensor7, &sensor8, &sensor9, &sensor10, &sensor11, &sensor12}; // Puts ToF sensor pointers into an array
+
+/**************************************************************************
+ *                      ToF ARRAY ASSIGNMENTS
+ *           (from the perspective of user seated on wheelchair)
+ *
+ *   Each ToF has a 3 letter name, the first indicates left/right, the
+ *   second front/back, and third, the specific ToF sensor
+ *   eg: LBB means Left side, Back end, Bottom ToF
+ *
+ *   FRONT - LEFT
+ *   ToF 10	- Top (Angle)		LFT
+ *   ToF 9	- Bottom (Front)	LFB
+ *   ToF 11	- Side				LFS
+ *
+ *   FRONT - RIGHT
+ *   ToF 8	- Top (Angle)		RFT
+ *   ToF 7	- Bottom (Front)	RFB
+ *   ToF 6	- Side				RFS
+ *
+ *   BACK - LEFT
+ *   ToF 3	- Side				LBS
+ *   ToF 4	- Top (Angle)		LBT
+ *   ToF 5	- Bottom			LBB
+ *
+ *   BACK - RIGHT
+ *   ToF 1	- Side				RBS
+ *   ToF 2	- Top (Angle)		RBT
+ *   ToF 0	- Bottom			RBB
+ *
+ **************************************************************************/
+
+//
+/*
+VL53L1X sensor1(PF_0, PF_1, PG_12);   // Block 1
+VL53L1X sensor2(PF_0, PF_1, PG_9);
+VL53L1X sensor3(PF_0, PF_1, PE_1);
+
+VL53L1X sensor4(PF_0, PF_1, PA_15);   // Block 2
+VL53L1X sensor5(PF_0, PF_1, PA_14);
+VL53L1X sensor6(PF_0, PF_1, PA_13);
+
+VL53L1X sensor7(PF_0, PF_1, PG_8);   // Block 3
+VL53L1X sensor8(PF_0, PF_1, PG_5);
+VL53L1X sensor9(PF_0, PF_1, PG_6);
+
+VL53L1X sensor10(PF_0, PF_1, PB_2);  // Block 4
+VL53L1X sensor11(PF_0, PF_1, PB_1);
+VL53L1X sensor12(PF_0, PF_1, PB_15);
+
+VL53L1X sensor13(PF_0, PF_1, PF_14);  // Middle Block - Inward ToF sensors
+VL53L1X sensor14(PF_0, PF_1, PE_9);
+
+VL53L1X* ToF[14] = {&sensor1, &sensor2, &sensor3, &sensor4, &sensor5, &sensor6,
+&sensor7, &sensor8, &sensor9, &sensor10, &sensor11, &sensor12, &sensor13, &sensor14}; // Puts ToF sensor pointers into an array
+*/
+//
+
 VL53L1X** ToFT = ToF;
 
-/***h***********************************************************************
+/**************************************************************************
  *                          Thread Definitions                            *
  **************************************************************************/
 
