@@ -70,16 +70,16 @@ void Wheelchair::velocity_thread()
     curr_pos = wheelS->getDistance(53.975);
 }
 
-void Wheelchair::emergencyButton_thread ()
+void Wheelchair::emergencyButton_thread()
 {
     while(1) {
-        while(e_button) {//change once button is connected
+        while(!e_button) {//change once button is connected
 
             //Stop wheelchair
             Wheelchair::stop();
-            printf("E-button has been pressed\r\n");
-            off->write(high);                              // Turn off PCB
-            on->write(0);                                  // Make sure PCB not on
+            out->printf("E-button has been pressed\r\n");
+            //off->write(high);                              // Turn off PCB
+            //on->write(0);                                  // Make sure PCB not on
             //Reset Board
             NVIC_SystemReset();
 
@@ -113,7 +113,7 @@ void Wheelchair::ToFSafe_thread()
      *   FRONT - LEFT
      *   ToF 10	- Top (Angle)		LFT
      *   ToF 9	- Bottom (Front)	LFB
-     *   ToF 11	- Side				LFS
+     *   ToF 11	- Side				LFS*/
 
     k1++;
 
@@ -138,9 +138,9 @@ void Wheelchair::ToFSafe_thread()
     outlierToF[0] = LFTStats.mean() + 2*LFTStats.stdev();
     outlierToF[1] = RFTStats.mean() + 2*RFTStats.stdev();
 
-//    for(int i = 0; i < 2; i++) {                             // Reads from the ToF Sensors
-//        runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
-//    }
+    for(int i = 0; i < 2; i++) {                             // Reads from the ToF Sensors
+        runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
+    }
 
     runningAverage[0] = ((runningAverage[0]*(4) + ToFV[10]) / 5);
     runningAverage[1] = ((runningAverage[1]*(4) + ToFV[8]) / 5);
@@ -259,7 +259,7 @@ void Wheelchair::ToFSafe_thread()
     After clearing the front side and moving forward, check if can clear the back
     when turning */
 
-    //When either sensors too close to the wall, can't turn
+/*    //When either sensors too close to the wall, can't turn
     if(LFS <= minWallLength) {
         leftSafety = 1;
         out->printf("Detecting wall to the left!\n");
@@ -320,7 +320,7 @@ void Wheelchair::ToFSafe_thread()
     Know the exact moment you can stop the chair going at a certain speed before
     its too late*/
 
-    if((currAngularVelocity * currAngularVelocity > 2 *
+ /*   if((currAngularVelocity * currAngularVelocity > 2 *
         maxAngularDeceleration * angle) && (LFS/10 <= arcLength + 10)) {
         leftSafety = 1; //Not safe to turn left
         out->printf("Too fast to the left!\n");
@@ -364,7 +364,7 @@ void Wheelchair::ToFSafe_thread()
     //fast turning/moving toward obstacle.
     //f
 
-     if((currAngularVelocity * currAngularVelocity > 2 *
+  /*   if((currAngularVelocity * currAngularVelocity > 2 *
         maxAngularDeceleration * angle) && (angleLeft/10 <= arcLength + 10)) {
         leftSafety = 1; //Not safe to turn left
         out->printf("Too fast to the left!, blindspot \n");
