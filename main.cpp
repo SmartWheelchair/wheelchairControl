@@ -146,7 +146,6 @@ int main(void)
     nh.advertise(chatter2);
     nh.subscribe(sub); */
 
-
     
 	pc.printf("Before Starting\r\n");
     
@@ -179,7 +178,7 @@ int main(void)
         if( pc.readable()) {
             set = 1;
             char c = pc.getc();                                                 // Read the instruction sent
-            if( c == 'w') {
+            if( c == 'e') {
                 smart.forward();                                                // Move forward
 
             }

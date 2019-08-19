@@ -23,7 +23,7 @@
 #define def (2.55f/3.3f)                 // Default axis on joystick to stay neutral; used on x and y axis
 #define high 3.3f/3.3f                  // High power on joystick; used on x and y axis
 #define low (1.7f/3.3f)                 // Low power on joystick; used on x and y axis
-#define offset .03f                     // Joystick adjustment to be able to go straight. Chair dependent on manufactoring precision
+#define offset .018f                     // Joystick adjustment to be able to go straight. Chair dependent on manufactoring precision
 #define process .1                      // Defines default time delay in seconds
 
 /*************************************************************************

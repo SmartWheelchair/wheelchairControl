@@ -34,7 +34,7 @@ Statistics LBTStats(ToFDataPointer3, 149, 1);
 Statistics RBTStats(ToFDataPointer4, 149, 1);
 int k2 = 0;     //Number of samples
 
-double dist_old, curr_pos;                                                             // Variables for odometry position
+double dist_old, curr_pos, curr_posS;                                                             // Variables for odometry position
 double outlierToF[4];
 double sensors3;
 volatile double wallDistance = 497;
@@ -68,11 +68,7 @@ void Wheelchair::velocity_thread()
     curr_vel = wheel->getVelocity();
     curr_velS = wheelS->getVelocity();
     curr_pos = wheel->getDistance(53.975);
-<<<<<<< HEAD
-    curr_pos = wheelS->getDistance(53.975);
-=======
-
->>>>>>> 2643109cf6961a938ba2636e5f9c9f52b5a7a6b8
+    curr_posS = wheelS->getDistance(53.975);
 }
 
 void Wheelchair::emergencyButton_thread()
@@ -104,7 +100,7 @@ void Wheelchair::ToFSafe_thread()
         ToFV[i] = (*(ToF+i))->readFromOneSensor();
         //out->printf("%d ",ToFV[i]);
     }
-    out->printf("\n");
+    //out->printf("\n");
     //out->printf("Encoder 2 TEST = %f\n", wheel->getDistance(53.975));
     //out->printf("Encoder 1 TEST = %f\n", wheelS->getDistance(53.975));
 
@@ -144,7 +140,7 @@ void Wheelchair::ToFSafe_thread()
     outlierToF[0] = LFTStats.mean() + 2*LFTStats.stdev();
     outlierToF[1] = RFTStats.mean() + 2*RFTStats.stdev();
 
-    for(int i = 0; i < 2; i++) {                             // Reads from the ToF Sensors
+/*    for(int i = 0; i < 2; i++) {                             // Reads from the ToF Sensors
         runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
     }
 
@@ -206,7 +202,7 @@ void Wheelchair::ToFSafe_thread()
 //        runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
 //    }
 
-    runningAverage[2] = ((runningAverage[2]*(4) + ToFV[4]) / 5);
+/*    runningAverage[2] = ((runningAverage[2]*(4) + ToFV[4]) / 5);
     runningAverage[3] = ((runningAverage[3]*(4) + ToFV[2]) / 5);
 
     int LBB = ToFV[5];//back left looking forward
@@ -460,15 +456,11 @@ void Wheelchair::move(float x_coor, float y_coor)
 
 /*************************************************************************
 *  Automatic mode: move forward and update x,y coordinate sent to chair  *
-**************************************************************************/
+**********e****************************************************************/
 void Wheelchair::forward()
 {
     //printf("current velosity; %f, curr vel S %f\r\n", curr_vel, curr_velS);
-<<<<<<< HEAD
-    if(forwardSafety == 0) {
-    x->write(high);
-    y->write(def);
-=======
+
    if(forwardSafety == 0) {
         x->write(high);
         y->write(def+1.5*offset);
@@ -476,7 +468,6 @@ void Wheelchair::forward()
         //double diff = fmod((wheel->getDistance(53.975)) - (wheelS->getDistance(53.975)), 100);
         //y->write(def-(diff/1000));
 
->>>>>>> 2643109cf6961a938ba2636e5f9c9f52b5a7a6b8
     }
     //out->printf("%f, %f\r\n", curr_pos, wheelS->getDistance(53.975));
 }
@@ -490,6 +481,7 @@ void Wheelchair::backward()
         x->write(low);
         y->write(def);
     }
+    out->printf("%f, %f\r\n", curr_vel, curr_velS);
 }
 /*************************************************************************
 *   Automatic mode: move right and update x,y coordinate sent to chair   *
@@ -752,13 +744,14 @@ void Wheelchair::pid_twistV()
     vDesiredS = 0;
     x->write(def);
     y->write(def+1.5*offset);            //added 1.5*offset
-    wheel->reset();                                                                     // Resets the encoders
+    wheel->reset();
+    wheelS->reset();// Resets the encoders
     /* Sets the constants for P and D */
     //PIDVelosity.SetTunings(.0005,0, 0.00);			//0.0005
     //PIDSlaveV.SetTunings(.005,0.000001, 0.000001); //0.005
 
     PIDVelosity.SetTunings(.0005,0, 0.00);			//0.0005
-    PIDSlaveV.SetTunings(.005,0.000001, 0.001); 	//0.005
+    PIDSlaveV.SetTunings(.000007,0.000001, 0.001); 	//0.005
 
     /* Limits to the range specified */
     PIDVelosity.SetOutputLimits(-.005, .005);
@@ -769,7 +762,7 @@ void Wheelchair::pid_twistV()
     PIDSlaveV.SetControllerDirection(DIRECT);
 
     while(1) {
-        linearV = .7;
+        linearV = .8;
         vel = curr_vel;
         vDesired = linearV*100;
         if(out->readable())
@@ -802,7 +795,9 @@ void Wheelchair::pid_twistV()
 
         /* Scales and makes some adjustments to velocity */
         vIn = curr_vel*100;
-        vInS = curr_vel-curr_velS;
+        vInS = (curr_pos-curr_posS)/1000;
+        //vIn = curr_pos*100;
+
         PIDVelosity.Compute();
         PIDSlaveV.Compute();
         if(forwardSafety == 0) {
@@ -817,9 +812,9 @@ void Wheelchair::pid_twistV()
             x->write(def);
             y->write(def);
         }
-        out->printf("Velosity: %f, Velosity2: %f, temporV %f, temporS %f\r\n", curr_vel, curr_velS, temporV, temporS);
+        out->printf("Velosity: %f, Velosity2: %f, temporV %f, temporS %f, posM %f, posS %f \r\n", curr_vel, curr_velS, temporV, temporS, curr_pos, curr_posS);
         Wheelchair::odomMsg();
-        wait(.01);                                                                      // Small delay (milliseconds)
+        wait(.005);                                                                      // Small delay (milliseconds)
     }
 }
 void Wheelchair::pid_wall_follower()
