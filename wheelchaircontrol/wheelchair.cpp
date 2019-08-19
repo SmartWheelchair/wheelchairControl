@@ -2,6 +2,7 @@
 *             Importing header into wheelchair.cpp                       *
 **************************************************************************/
 #include "wheelchair.h"
+//#include <math.h>
 
 /*************************************************************************
 *                     Defining global variables                          *
@@ -67,20 +68,22 @@ void Wheelchair::velocity_thread()
     curr_vel = wheel->getVelocity();
     curr_velS = wheelS->getVelocity();
     curr_pos = wheel->getDistance(53.975);
+
 }
 
-void Wheelchair::emergencyButton_thread ()
+void Wheelchair::emergencyButton_thread()
 {
     while(1) {
+    	//out->printf("I'm in THREAD\r\n");
         while(e_button) {//change once button is connected
-
+        	out->printf("E-button has been pressed\r\n");
             //Stop wheelchair
             Wheelchair::stop();
-            printf("E-button has been pressed\r\n");
+            out->printf("E-button has been pressed\r\n");
             off->write(high);                              // Turn off PCB
-            on->write(0);                                  // Make sure PCB not on
+            //on->write(0);                                  // Make sure PCB not on
             //Reset Board
-            NVIC_SystemReset();
+            //NVIC_SystemReset();
 
         }
 
@@ -171,6 +174,8 @@ void Wheelchair::ToFSafe_thread()
         if(x->read() > def) {
             x->write(def);
             forwardSafety = 1;          // You cannot move forward
+            out->printf("Enabled Forward Safety, Case 1\n");
+            ///THIS SHOLD BE 1
         }
     }
 
@@ -181,6 +186,8 @@ void Wheelchair::ToFSafe_thread()
         if(x->read() > def) {
             x->write(def);
             forwardSafety = 1;          // You cannot move forward
+            out->printf("Enabled Forward Safety, Case 2\n");
+            /////THIS SHOULD BE 1
         }
     }
 
@@ -224,6 +231,7 @@ void Wheelchair::ToFSafe_thread()
         if(x->read() > def) {
             x->write(def);
             backwardSafety = 1;          // You cannot move backwards
+            out->printf("Enabled Backward Safety, Case 1\n");
         }
     }
 
@@ -234,6 +242,7 @@ void Wheelchair::ToFSafe_thread()
         if(x->read() > def) {
             x->write(def);
             backwardSafety = 1;          // You cannot move backwards
+            out->printf("Enabled Backward Safety, Case 2\n");
         }
     }
 
@@ -318,7 +327,7 @@ void Wheelchair::ToFSafe_thread()
     //the side sensors
     if(angleLeft <= 100000) {
         leftSafety = 1;
-        out->printf("Blindspot on the left side\n");
+        //out->printf("Blindspot on the left side\n");
     }
     else{
         leftSafety = 0;
@@ -326,7 +335,7 @@ void Wheelchair::ToFSafe_thread()
 
     if(angleRight <= 100000) {	//Number needs to be changed based on testing
         rightSafety = 1;
-        out->printf("Blindspot on the right side\n");
+        //out->printf("Blindspot on the right side\n");
     }
     else{
         rightSafety = 0;
@@ -339,7 +348,7 @@ void Wheelchair::ToFSafe_thread()
     if((currAngularVelocity * currAngularVelocity > 2 *
         maxAngularDeceleration * angle) && (LFS/10 <= arcLength + 10)) {
         leftSafety = 1; //Not safe to turn left
-        out->printf("Too fast to the left!\n");
+        //out->printf("Too fast to the left!\n");
     }
     else{
         leftSafety = 0;
@@ -347,7 +356,7 @@ void Wheelchair::ToFSafe_thread()
     if((currAngularVelocity * currAngularVelocity > 2 *
         maxAngularDeceleration * angle) && (RFS/10 <= arcLength + 10)) {
         rightSafety = 1; //Not safe to turn right
-        out->printf("Too fast to the right!\n");
+        //out->printf("Too fast to the right!\n");
     }
     else{
         rightSafety = 0;
@@ -383,7 +392,7 @@ void Wheelchair::ToFSafe_thread()
      if((currAngularVelocity * currAngularVelocity > 2 *
         maxAngularDeceleration * angle) && (angleLeft/10 <= arcLength + 10)) {
         leftSafety = 1; //Not safe to turn left
-        out->printf("Too fast to the left!, blindspot \n");
+        //out->printf("Too fast to the left!, blindspot \n");
     }
     else{
         leftSafety = 0;
@@ -391,7 +400,7 @@ void Wheelchair::ToFSafe_thread()
     if((currAngularVelocity * currAngularVelocity > 2 *
         maxAngularDeceleration * angle) && (angleRight/10 <= arcLength + 10)) {
         rightSafety = 1; //Not safe to turn right
-        out->printf("Too fast to the right!, blindspot \n");
+        //out->printf("Too fast to the right!, blindspot \n");
     }
     else{
         rightSafety = 0;
@@ -468,11 +477,15 @@ void Wheelchair::move(float x_coor, float y_coor)
 void Wheelchair::forward()
 {
     //printf("current velosity; %f, curr vel S %f\r\n", curr_vel, curr_velS);
-    if(forwardSafety == 0) {
+   if(forwardSafety == 0) {
         x->write(high);
-        y->write(def+offset);
+        y->write(def+1.5*offset);
+
+        //double diff = fmod((wheel->getDistance(53.975)) - (wheelS->getDistance(53.975)), 100);
+        //y->write(def-(diff/1000));
+
     }
-    out->printf("%f, %f\r\n", curr_pos, wheelS->getDistance(53.975));
+    //out->printf("%f, %f\r\n", curr_pos, wheelS->getDistance(53.975));
 }
 
 /*************************************************************************
@@ -742,14 +755,17 @@ void Wheelchair::pid_twistV()
 {
     /* Initializes variables as default */
     double temporV = def;
-    double temporS = def+offset;
+    double temporS = def+1.5*offset;
     vDesiredS = 0;
     x->write(def);
-    y->write(def);
+    y->write(def+1.5*offset);            //added 1.5*offset
     wheel->reset();                                                                     // Resets the encoders
     /* Sets the constants for P and D */
-    PIDVelosity.SetTunings(.0005,0, 0.00);
-    PIDSlaveV.SetTunings(.005,0.000001, 0.000001);
+    //PIDVelosity.SetTunings(.0005,0, 0.00);			//0.0005
+    //PIDSlaveV.SetTunings(.005,0.000001, 0.000001); //0.005
+
+    PIDVelosity.SetTunings(.0005,0, 0.00);			//0.0005
+    PIDSlaveV.SetTunings(.005,0.000001, 0.001); 	//0.005
 
     /* Limits to the range specified */
     PIDVelosity.SetOutputLimits(-.005, .005);
@@ -779,7 +795,7 @@ void Wheelchair::pid_twistV()
         }
 
         if(vDesired >= 0) {
-            PIDVelosity.SetTunings(.000004,0, 0.00);                                    // Sets the constants for P and D
+            PIDVelosity.SetTunings(.000004,0, 0.00);                                    //0.000004 Sets the constants for P and D
             PIDVelosity.SetOutputLimits(-.002, .002);                                   // Limits to the range specified
         } else {
             PIDVelosity.SetTunings(.000015,0, 0.00);                                    // Sets the constants for P and D
@@ -790,6 +806,7 @@ void Wheelchair::pid_twistV()
         if(temporV >= 1.5) {
             temporV = 1.5;
         }
+
         /* Scales and makes some adjustments to velocity */
         vIn = curr_vel*100;
         vInS = curr_vel-curr_velS;
@@ -807,74 +824,74 @@ void Wheelchair::pid_twistV()
             x->write(def);
             y->write(def);
         }
-        //out->printf("Velosity: %f, Velosity2: %f, temporV %f, temporS %f\r\n", curr_vel, curr_velS, temporV, temporS);
+        out->printf("Velosity: %f, Velosity2: %f, temporV %f, temporS %f\r\n", curr_vel, curr_velS, temporV, temporS);
         Wheelchair::odomMsg();
         wait(.01);                                                                      // Small delay (milliseconds)
     }
 }
 void Wheelchair::pid_wall_follower()
 {
-    out->printf("Inside pid_wall_follower()\n");
-
-    /* Initializes variables as default */
-    double temporV = def;
-    double temporS = def+offset;
-    wallDistance = 450;
-    x->write(def);
-    y->write(def);
-    /* Sets the constants for P and D */
-    PIDVelosity.SetTunings(.0005,0, 0.00);
-    PIDFollowRight.SetTunings(.005,0.000001, 0.000001);
-
-    /* Limits to the range specified */
-    PIDVelosity.SetOutputLimits(-.005, .005);
-    PIDFollowRight.SetOutputLimits(-.002, .002);
-
-    /* PID mode: Direct */
-    PIDVelosity.SetControllerDirection(DIRECT);
-    PIDFollowRight.SetControllerDirection(DIRECT);
-
-    while(1) {
-        linearV = .5;
-        vel = curr_vel;
-        vDesired = linearV*100;
-        if(out->readable())
-            return;
-        /* Update and set all variable so that the chair is stationary
-        * if the velocity is zero
-        */
-
-        if(vDesired >= 0) {
-            PIDVelosity.SetTunings(.000004,0, 0.00);                                    // Sets the constants for P and D
-            PIDVelosity.SetOutputLimits(-.002, .002);                                   // Limits to the range specified
-        } else {
-            PIDVelosity.SetTunings(.000015,0, 0.00);                                    // Sets the constants for P and D
-            PIDVelosity.SetOutputLimits(-.0005, .0005);                                 // Limits to range specified
-        }
-
-        /* Sets maximum value of variable to 1 */
-        if(temporV >= 1) {
-            temporV = 1;
-        }
-        /* Scales and makes some adjustments to velocity */
-        vIn = curr_vel*100;
-        PIDVelosity.Compute();
-        PIDFollowRight.Compute();
-        if(forwardSafety == 0) {
-            temporV += vOut;
-            temporS += vOutS;
-
-            /* Updates x,y sent to Wheelchair and for Odometry message in ROS */
-            x->write(temporV);
-            y->write(temporS);
-        } else {
-            x->write(def);
-            y->write(def);
-        }
-        //out->printf("Velosity: %f, Velosity2: %f, temporV %f, temporS %f\r\n", curr_vel, curr_velS, temporV, temporS);
-        wait(.01);                                                                      // Small delay (milliseconds)
-    }
-
+//    out->printf("Inside pid_wall_follower()\n");
+//
+//    /* Initializes variables as default */
+//    double temporV = def;
+//    double temporS = def+offset;
+//    wallDistance = 450;
+//    x->write(def);
+//    y->write(def);
+//    /* Sets the constants for P and D */
+//    PIDVelosity.SetTunings(.0005,0, 0.00);
+//    PIDFollowRight.SetTunings(.005,0.000001, 0.000001);
+//
+//    /* Limits to the range specified */
+//    PIDVelosity.SetOutputLimits(-.005, .005);
+//    PIDFollowRight.SetOutputLimits(-.002, .002);
+//
+//    /* PID mode: Direct */
+//    PIDVelosity.SetControllerDirection(DIRECT);
+//    PIDFollowRight.SetControllerDirection(DIRECT);
+//
+//    while(1) {
+//        linearV = .5;
+//        vel = curr_vel;
+//        vDesired = linearV*100;
+//        if(out->readable())
+//            return;
+//        /* Update and set all variable so that the chair is stationary
+//        * if the velocity is zero
+//        */
+//
+//        if(vDesired >= 0) {
+//            PIDVelosity.SetTunings(.000004,0, 0.00);                                    // Sets the constants for P and D
+//            PIDVelosity.SetOutputLimits(-.002, .002);                                   // Limits to the range specified
+//        } else {
+//            PIDVelosity.SetTunings(.000015,0, 0.00);                                    // Sets the constants for P and D
+//            PIDVelosity.SetOutputLimits(-.0005, .0005);                                 // Limits to range specified
+//        }
+//
+//        /* Sets maximum value of variable to 1 */
+//        if(temporV >= 1) {
+//            temporV = 1;
+//        }
+//        /* Scales and makes some adjustments to velocity */
+//        vIn = curr_vel*100;
+//        PIDVelosity.Compute();
+//        PIDFollowRight.Compute();
+//        if(forwardSafety == 0) {
+//            temporV += vOut;
+//            temporS += vOutS;
+//
+//            /* Updates x,y sent to Wheelchair and for Odometry message in ROS */
+//            x->write(temporV);
+//            y->write(temporS);
+//        } else {
+//            x->write(def);
+//            y->write(def);
+//        }
+//        //out->printf("Velosity: %f, Velosity2: %f, temporV %f, temporS %f\r\n", curr_vel, curr_velS, temporV, temporS);
+//        wait(.01);                                                                      // Small delay (milliseconds)
+//    }
+//
 
 }
 /*************************************************************************

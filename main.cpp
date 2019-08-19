@@ -22,7 +22,7 @@ int max_velocity;
  *        Variables and Pins for Watchdog and Emergency Button            *
  **************************************************************************/
  
-DigitalIn e_button(D6, PullDown);       // Change to PullUp if testing without Emergency Button Connected
+DigitalIn e_button(PE_9, PullDown);       // Change to PullUp if testing without Emergency Button Connected
 PwmOut on(PE_6);                        // Turn Wheelchair On
 PwmOut off(PE_5);                       // Turn Wheelchair Off
 
@@ -145,6 +145,8 @@ int main(void)
     nh.advertise(chatter);
     nh.advertise(chatter2);
     nh.subscribe(sub); */
+
+
     
     pc.printf("Before Starting\r\n");
     
@@ -163,17 +165,22 @@ int main(void)
     
     pc.printf("After Starting\r\n");
 
-    Watchdog dog;                                                               // Creates Watchdog object
-    dog.Configure(watchdogLimit);                                               // Configures timeout for Watchdog
+    //Watchdog dog;                                                               // Creates Watchdog object
+    //dog.Configure(watchdogLimit);                                               // Configures timeout for Watchdog
     pc.printf("Code initiated\n");
     int set = 0;
     
     while(1) {
+/*
+    	if (!e_button) {
+    			pc.printf("E-button has been pressed main loop\r\n");
+    	}
+*/
         if( pc.readable()) {
             set = 1;
             char c = pc.getc();                                                 // Read the instruction sent
             if( c == 'w') {
-                smart.forward();                                                // Move foward
+                smart.forward();                                                // Move forward
 
             }
             else if( c == 'a') {
@@ -242,7 +249,7 @@ int main(void)
         
         t.stop();
         //pc.printf("Time elapsed: %f seconds, Iteration = %d\n", t.read(), iteration);
-        dog.Service();                                                          // Service the Watchdog so it does not cause a system reset - "Kicking"/"Feeding" the
+        //dog.Service();                                                          // Service the Watchdog so it does not cause a system reset - "Kicking"/"Feeding" the
 
     }
 }
