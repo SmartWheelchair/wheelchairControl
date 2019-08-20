@@ -22,8 +22,8 @@ int ledgeArrayLF[150];
 int ledgeArrayRF[150];
 int* ToFDataPointer1 = ledgeArrayLF;
 int* ToFDataPointer2 = ledgeArrayRF;
-Statistics LFTStats(ToFDataPointer1, 149, 1);
-Statistics RFTStats(ToFDataPointer2, 149, 1);
+Statistics LFDStats(ToFDataPointer1, 149, 1);
+Statistics RFDStats(ToFDataPointer2, 149, 1);
 int k1 = 0;     //Number of samples
 
 int ledgeArrayLB[150];
@@ -98,9 +98,9 @@ void Wheelchair::ToFSafe_thread()
     wait(0.01);
     for(int i = 0; i < 12; i++) {                            // Reads from the ToF Sensors
         ToFV[i] = (*(ToF+i))->readFromOneSensor();
-        //out->printf("%d ",ToFV[i]);
+        out->printf("%d ",ToFV[i]);
     }
-    //out->printf("\n");
+    out->printf("\n");
     //out->printf("Encoder 2 TEST = %f\n", wheel->getDistance(53.975));
     //out->printf("Encoder 1 TEST = %f\n", wheelS->getDistance(53.975));
 
@@ -110,11 +110,14 @@ void Wheelchair::ToFSafe_thread()
      *
      *   Each ToF has a 3 letter name, the first indicates left/right, the
      *   second front/back, and third, the specific ToF sensor
+     *   L = Left, R = Right
+     *   F = Front, B = Back
+     *   D = Down, F = Forward, Side = S
      *   eg: LBB means Left side, Back end, Bottom ToF
      *
      *   FRONT - LEFT
-     *   ToF 10	- Top (Angle)		LFT
-     *   ToF 9	- Bottom (Front)	LFB
+     *   ToF 10	- Down (Angle)		LFD
+     *   ToF 9	- Bottom (Front)	LFF
      *   ToF 11	- Side				LFS*/
 
     k1++;
@@ -137,43 +140,47 @@ void Wheelchair::ToFSafe_thread()
     //}
     //out->printf("\r\n");
 
-    outlierToF[0] = LFTStats.mean() + 2*LFTStats.stdev();
-    outlierToF[1] = RFTStats.mean() + 2*RFTStats.stdev();
+    outlierToF[0] = LFDStats.mean() + 2*LFDStats.stdev();
+    outlierToF[1] = RFDStats.mean() + 2*RFDStats.stdev();
 
-/*    for(int i = 0; i < 2; i++) {                             // Reads from the ToF Sensors
-        runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
-    }
+//    for(int i = 0; i < 2; i++) {                             // Reads from the ToF Sensors
+//        runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
+//    }
 
-    runningAverage[0] = ((runningAverage[0]*(4) + ToFV[10]) / 5);
-    runningAverage[1] = ((runningAverage[1]*(4) + ToFV[8]) / 5);
+    runningAverage[0] = ((runningAverage[0]*(4) + LFD) / 5);
+    runningAverage[1] = ((runningAverage[1]*(4) + RFD) / 5);
 
-    int LFS = ToFV[11];	//forward left
-    int RFS = ToFV[6];	//forward right
-    sensors3 = ToFV[6];
-    if(curr_vel < 1 &&((2 * maxDecelerationSlow*LFS < curr_vel*curr_vel*1000*1000 ||
-                        2 * maxDecelerationSlow*RFS < curr_vel*curr_vel*1000*1000) &&
-                       (LFS < 1500 || RFS < 1500)) ||
-            550 > LFS || 550 > RFS) {
+//    int LFF = ToFV[11];	//forward left
+//    int RFF = ToFV[6];	//forward right
+//    sensors3 = ToFV[6];
+    if(curr_vel < 1 &&((2 * maxDecelerationSlow*LFF < curr_vel*curr_vel*1000*1000 ||
+                        2 * maxDecelerationSlow*RFF < curr_vel*curr_vel*1000*1000) &&
+                       (LFF < 1000 || RFF < 1000)) ||
+            550 > LFF || 550 > RFF) {
         if(x->read() > def) {
             x->write(def);
-            forwardSafety = 1;          // You cannot move forward
+            forwardSafety = 0;          // You cannot move forward
             out->printf("Enabled Forward Safety, Case 1\n");
-            ///THIS SHOLD BE 1
+            ///THIS SHOuLD BE 1
         }
     }
 
-    else if(curr_vel > 1 &&((2 * maxDecelerationFast*LFS < curr_vel*curr_vel*1000*1000 ||
-                             2 * maxDecelerationFast*RFS < curr_vel*curr_vel*1000*1000) &&
-                            (LFS < 1500 || RFS < 1500)) ||
-            550 > LFS || 550 > RFS) {
+    else if(curr_vel > 1 &&((2 * maxDecelerationFast*LFF < curr_vel*curr_vel*1000*1000 ||
+                             2 * maxDecelerationFast*RFF < curr_vel*curr_vel*1000*1000) &&
+                            (LFF < 1500 || RFF < 1500)) ||
+            550 > LFF || 550 > RFF) {
         if(x->read() > def) {
             x->write(def);
-            forwardSafety = 1;          // You cannot move forward
+            backwardSafety = 1;          // You cannot move forward
             out->printf("Enabled Forward Safety, Case 2\n");
             /////THIS SHOULD BE 1
         }
     }
-
+    else{
+    	forwardSafety = 0;
+    	backwardSafety = 0;
+    }
+/*
     else if ((runningAverage[0] > outlierToF[0]) || (runningAverage[1] > outlierToF[1])) {
         forwardSafety = 1;
         out->printf("I'M STOPPING BECAUSE OF A FRONT LEDGE\r\n");
@@ -202,8 +209,8 @@ void Wheelchair::ToFSafe_thread()
 //        runningAverage[i] = ((runningAverage[i]*(4) + ToFV[(i*3)+1]) / 5);
 //    }
 
-/*    runningAverage[2] = ((runningAverage[2]*(4) + ToFV[4]) / 5);
-    runningAverage[3] = ((runningAverage[3]*(4) + ToFV[2]) / 5);
+/*    runningAverage[2] = ((runningAverage[2]*(4) + LBD) / 5);
+    runningAverage[3] = ((runningAverage[3]*(4) + RBD) / 5);
 
     int LBB = ToFV[5];//back left looking forward
     int RBB = ToFV[0];//back right looking forward
@@ -244,11 +251,11 @@ void Wheelchair::ToFSafe_thread()
     /*Side Tof begin*/
     //int LFS = ToFV[11];      	//front left	//already declared
     //int RFS = ToFV[6];      	//front right	//already declared
-    int LBS = ToFV[3];      	//left side on back
-    int RBS = ToFV[1];      	//right side on back
+//    int LBS = ToFV[3];      	//left side on back
+//    int RBS = ToFV[1];      	//right side on back
 
-    int angleRight = ToFV[100];   //The angled sensor for blindspots
-    int angleLeft = ToFV[101];
+//    int LFA = ToFV[100];   //The angled sensor for blindspots
+//    int RFA = ToFV[101];
 
     /*			TEMPORARY COMMENTING WHILE IMU DISABLED
 
@@ -308,7 +315,7 @@ void Wheelchair::ToFSafe_thread()
 
     //Below for the angled sensor when detect something in the blindspot between
     //the side sensors
-    if(angleLeft <= 100000) {
+    if(LFA <= 100000) {
         leftSafety = 1;
         //out->printf("Blindspot on the left side\n");
     }
@@ -316,7 +323,7 @@ void Wheelchair::ToFSafe_thread()
         leftSafety = 0;
     }
 
-    if(angleRight <= 100000) {	//Number needs to be changed based on testing
+    if(RFA <= 100000) {	//Number needs to be changed based on testing
         rightSafety = 1;
         //out->printf("Blindspot on the right side\n");
     }
@@ -373,7 +380,7 @@ void Wheelchair::ToFSafe_thread()
     //f
 
   /*   if((currAngularVelocity * currAngularVelocity > 2 *
-        maxAngularDeceleration * angle) && (angleLeft/10 <= arcLength + 10)) {
+        maxAngularDeceleration * angle) && (LFA/10 <= arcLength + 10)) {
         leftSafety = 1; //Not safe to turn left
         //out->printf("Too fast to the left!, blindspot \n");
     }
@@ -381,7 +388,7 @@ void Wheelchair::ToFSafe_thread()
         leftSafety = 0;
     }
     if((currAngularVelocity * currAngularVelocity > 2 *
-        maxAngularDeceleration * angle) && (angleRight/10 <= arcLength + 10)) {
+        maxAngularDeceleration * angle) && (RFA/10 <= arcLength + 10)) {
         rightSafety = 1; //Not safe to turn right
         //out->printf("Too fast to the right!, blindspot \n");
     }
@@ -433,8 +440,8 @@ Wheelchair::Wheelchair(PinName xPin, PinName yPin, Serial* pc, Timer* time, QEI*
         ledgeArrayRF[i] = (*(ToF+8))->readFromOneSensor();
     }
 
-    outlierToF[0] = LFTStats.mean() + 2*LFTStats.stdev();
-    outlierToF[1] = RFTStats.mean() + 2*RFTStats.stdev();
+    outlierToF[0] = LFDStats.mean() + 2*LFDStats.stdev();
+    outlierToF[1] = RFDStats.mean() + 2*RFDStats.stdev();
 
     myPID.SetMode(AUTOMATIC);                                                           // PID mode: Automatic
 }
