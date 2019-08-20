@@ -34,7 +34,7 @@
 #define Encoder1 D7                     // Digital In Pull Up Pin 
 #define Encoder2 D8
 #define Diameter 31.75                  // Diameter of encoder wheel
-#define maxDecelerationSlow 120
+#define maxDecelerationSlow 100
 #define maxDecelerationFast 30
 #define ToFSensorNum 12
 
@@ -224,23 +224,23 @@ public:
     bool rightSafety;           //to check if can turn right
     double curr_yaw, curr_velS; // Variable that contains current relative angle
 
-    int LFF = ToFV[9];  //Left Front Forward
-    int LFS = ToFV[11]; //Left Front Side
-	int LFA = -2;       //Left Front Angle
-	int LFD = ToFV[10]; //Left Front Down
+    int* LFF = &ToFV[9];  //Left Front Forward
+    int* LFS = &ToFV[11]; //Left Front Side
+	int* LFA = &ToFV[999];       //Left Front Angle
+	int* LFD = &ToFV[10]; //Left Front Down
 
-	int RFF = ToFV[7];  //Right Front Forward
-	int RFS = ToFV[6];  //Right Front Side
-	int RFA = -2;       //Right Front Angle
-	int RFD = ToFV[8];  //Right Front Down
+	int* RFF = &ToFV[8];  //Right Front Forward
+	int* RFS = &ToFV[6];  //Right Front Side
+	int* RFA = &ToFV[999];;       //Right Front Angle
+	int* RFD = &ToFV[7];  //Right Front Down
 
-	int LBB = ToFV[5];  //Left Back Forward
-	int LBS = ToFV[3];  //Left Back Side
-	int LBD = ToFV[4];  //Left Back Down
+	int* LBB = &ToFV[5];  //Left Back Forward
+	int* LBS = &ToFV[3];  //Left Back Side
+	int* LBD = &ToFV[4];  //Left Back Down
 
-	int RBB = ToFV[0];  //Right Back Forward
-	int RBS = ToFV[1];  //Right Back Side
-	int RBD = ToFV[2];  //Right Back Down
+	int* RBB = &ToFV[0];  //Right Back Forward
+	int* RBS = &ToFV[1];  //Right Back Side
+	int* RBD = &ToFV[2];  //Right Back Down
 
 private:
     /************************************************************************
