@@ -158,7 +158,8 @@ void Wheelchair::ToFSafe_thread()
     out->printf("curr_vel: %f\n", curr_vel);
     out->printf("maxDecelerationSlow: %d\n", maxDecelerationSlow);
     out->printf("RFF: %d, LFF: %d\n", *RFF, *LFF);
-    if(curr_vel < 1 &&((2 * maxDecelerationSlow*(*LFF) < curr_vel*curr_vel*1000*1000 ||
+
+    if(curr_vel < 0.5 &&((2 * maxDecelerationSlow*(*LFF) < curr_vel*curr_vel*1000*1000 ||
                         2 * maxDecelerationSlow*(*RFF) < curr_vel*curr_vel*1000*1000) &&
                        (*LFF < 1000 || *RFF < 1000)) ||
             550 > *LFF || 550 > *RFF) {
@@ -166,9 +167,20 @@ void Wheelchair::ToFSafe_thread()
             x->write(def);
             forwardSafety = 1;          // You cannot move forward
             out->printf("Enabled Forward Safety, Case 1\n");
-            ///THIS SHOuLD BE 1
+            ///THIS SHOULD BE 1
         }
    }
+
+   else if(curr_vel > 0.5 && curr_vel < 0.9 &&((2 * maxDecelerationFast*(*LFF) < curr_vel*curr_vel*1000*1000 ||
+                                 2 * maxDecelerationFast*(*RFF) < curr_vel*curr_vel*1000*1000) &&
+                                (*LFF < 1500 || *RFF < 1500)) || 750 > *LFF || 750 > *RFF) {
+            if(x->read() > def) {
+                x->write(def);
+                forwardSafety = 1;          // You cannot move forward
+                out->printf("Enabled Forward Safety, Case 2\n");
+                /////THIS SHOULD BE 1
+            }
+        }
 
 //       if(curr_vel > 0) {
 //    	   if (2 * maxDecelerationSlow*(*LFF) < curr_vel*curr_vel*1000*1000) {
@@ -215,18 +227,15 @@ void Wheelchair::ToFSafe_thread()
 //
 //       }
 
+   else if((curr_vel > 0.9) && (*LFF < 1500 || *RFF < 1500)) {
+               if(x->read() > def) {
+                   x->write(def);
+                   forwardSafety = 1;          // You cannot move forward
+                   out->printf("Enabled Forward Safety, Case 3\n");
+                   /////THIS SHOULD BE 1
+               }
+           }
 
-    else if(curr_vel > 1 &&((2 * maxDecelerationFast*(*LFF) < curr_vel*curr_vel*1000*1000 ||
-                             2 * maxDecelerationFast*(*RFF) < curr_vel*curr_vel*1000*1000) &&
-                            (*LFF < 1500 || *RFF < 1500)) ||
-            550 > *LFF || 550 > *RFF) {
-        if(x->read() > def) {
-            x->write(def);
-            backwardSafety = 1;          // You cannot move forward
-            out->printf("Enabled Forward Safety, Case 2\n");
-            /////THIS SHOULD BE 1
-        }
-    }
     else{
     	forwardSafety = 0;
     	backwardSafety = 0;

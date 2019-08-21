@@ -35,7 +35,7 @@
 #define Encoder2 D8
 #define Diameter 31.75                  // Diameter of encoder wheel
 #define maxDecelerationSlow 100
-#define maxDecelerationFast 30
+#define maxDecelerationFast 10
 #define ToFSensorNum 12
 
 /*************************************************************************
