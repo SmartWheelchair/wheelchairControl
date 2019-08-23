@@ -61,7 +61,7 @@ public:
     *   variables for the timer,encoders and time-of-flight sensors          *
     **************************************************************************/
     Wheelchair(PinName xPin, PinName yPin, Serial* pc, Timer* time, QEI* wheel, QEI* wheelS,
-               VL53L1X** ToF);
+               VL53L1X** ToF, DigitalIn* e1_button);
 
     /*************************************************************************
     *           This method is to move using the joystick                    *
@@ -241,6 +241,8 @@ public:
 	int* RBB = &ToFV[0];  //Right Back Forward
 	int* RBS = &ToFV[1];  //Right Back Side
 	int* RBD = &ToFV[2];  //Right Back Down
+
+
 
 private:
     /************************************************************************

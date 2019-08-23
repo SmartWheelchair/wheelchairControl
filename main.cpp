@@ -22,7 +22,7 @@ int max_velocity;
  *        Variables and Pins for Watchdog and Emergency Button            *
  **************************************************************************/
  
-DigitalIn e_button(PE_9, PullDown);       // Change to PullUp if testing without Emergency Button Connected
+DigitalIn e_button(PC_9, PullDown);      // Change to PullUp if testing without Emergency Button Connected
 PwmOut on(PE_6);                        // Turn Wheelchair On
 PwmOut off(PE_5);                       // Turn Wheelchair Off
 
@@ -126,10 +126,9 @@ VL53L1X** ToFT = ToF;
 /**************************************************************************
  *                          Thread Definitions                            *
  **************************************************************************/
-
 Timer t, IMU_t;                                                 // Initialize time object t and IMU timer
 EventQueue queue;                                               // Class to organize threads
-Wheelchair smart(xDir,yDir, &pc, &IMU_t, &wheel, &wheelS, ToFT);    // Initialize wheelchair object
+Wheelchair smart(xDir,yDir, &pc, &IMU_t, &wheel, &wheelS, ToFT, &e_button);    // Initialize wheelchair object
 Thread compass;                                                 // Thread for compass
 Thread velocity;                                                // Thread for velocity
 Thread ToFSafe;                                                 // Thread for safety stuff
@@ -170,11 +169,7 @@ int main(void)
     int set = 0;
     
     while(1) {
-/*
-    	if (!e_button) {
-    			pc.printf("E-button has been pressed main loop\r\n");
-    	}
-*/
+
         if( pc.readable()) {
             set = 1;
             char c = pc.getc();                                                 // Read the instruction sent

@@ -73,21 +73,24 @@ void Wheelchair::velocity_thread()
 
 void Wheelchair::emergencyButton_thread()
 {
+
     while(1) {
-    	//out->printf("I'm in THREAD\r\n");
-        while(e_button) {//change once button is connected
+        if(!(e_button->read())) {//change once button is connected
         	out->printf("E-button has been pressed\r\n");
             //Stop wheelchair
-            Wheelchair::stop();
-            out->printf("E-button has been pressed\r\n");
-            off->write(high);                              // Turn off PCB
+            //Wheelchair::stop();
+            //out->printf("E-button has been pressed\r\n");
+            //off->write(high);                              // Turn off PCB
             //on->write(0);                                  // Make sure PCB not on
             //Reset Board
             //NVIC_SystemReset();
 
         }
-
+        else{
+        	out->printf("\r e_button has not been pressed\r\n");
+        }
     }
+
 }
 
 /*************************************************************************
@@ -463,7 +466,7 @@ void Wheelchair::ToFSafe_thread()
 *                   Constructor for Wheelchair class                     *
 **************************************************************************/
 Wheelchair::Wheelchair(PinName xPin, PinName yPin, Serial* pc, Timer* time, QEI* qei, QEI* qeiS,
-                       VL53L1X** ToFT)
+                       VL53L1X** ToFT, DigitalIn* e1_button): e_button(e1_button)
 {
     x_position = 0;
     y_position = 0;
