@@ -34,8 +34,8 @@
 #define Encoder1 D7                     // Digital In Pull Up Pin 
 #define Encoder2 D8
 #define Diameter 31.75                  // Diameter of encoder wheel
-#define maxDecelerationSlow 100
-#define maxDecelerationFast 10
+#define maxDecelerationSlow 130
+#define maxDecelerationFast 80
 #define ToFSensorNum 12
 
 /*************************************************************************

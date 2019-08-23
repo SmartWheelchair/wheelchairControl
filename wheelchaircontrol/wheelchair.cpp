@@ -83,11 +83,11 @@ void Wheelchair::emergencyButton_thread()
             //off->write(high);                              // Turn off PCB
             //on->write(0);                                  // Make sure PCB not on
             //Reset Board
-            //NVIC_SystemReset();
+            NVIC_SystemReset();
 
         }
         else{
-        	out->printf("\r e_button has not been pressed\r\n");
+        	//out->printf("\r e_button has not been pressed\r\n");
         }
     }
 
@@ -164,19 +164,29 @@ void Wheelchair::ToFSafe_thread()
 
     if(curr_vel < 0.5 &&((2 * maxDecelerationSlow*(*LFF) < curr_vel*curr_vel*1000*1000 ||
                         2 * maxDecelerationSlow*(*RFF) < curr_vel*curr_vel*1000*1000) &&
-                       (*LFF < 1000 || *RFF < 1000)) ||
-            550 > *LFF || 550 > *RFF) {
+                       (*LFF < 1000 || *RFF < 1000)) /*||
+            550 > *LFF || 550 > *RFF */) {
+
         if(x->read() > def) {
             x->write(def);
             forwardSafety = 1;          // You cannot move forward
-            out->printf("Enabled Forward Safety, Case 1\n");
+            out->printf("Enabled Forward Safety, Case 1 - A (FORMULA)\n");
             ///THIS SHOULD BE 1
         }
    }
 
+   else if (550 > *LFF || 550 > *RFF) {
+		if(x->read() > def) {
+		  x->write(def);
+		  forwardSafety = 1;          // You cannot move forward
+		  out->printf("Enabled Forward Safety, Case 1 - B (DISTANCE)\n");
+		  /////THIS SHOULD BE 1
+		}
+   }
+
    else if(curr_vel > 0.5 && curr_vel < 0.9 &&((2 * maxDecelerationFast*(*LFF) < curr_vel*curr_vel*1000*1000 ||
                                  2 * maxDecelerationFast*(*RFF) < curr_vel*curr_vel*1000*1000) &&
-                                (*LFF < 1500 || *RFF < 1500)) || 750 > *LFF || 750 > *RFF) {
+                                (*LFF < 1500 || *RFF < 1500)) /*|| 550 > *LFF || 550 > *RFF */) {
             if(x->read() > def) {
                 x->write(def);
                 forwardSafety = 1;          // You cannot move forward
@@ -230,7 +240,7 @@ void Wheelchair::ToFSafe_thread()
 //
 //       }
 
-   else if((curr_vel > 0.9) && (*LFF < 1500 || *RFF < 1500)) {
+   else if((curr_vel > 0.9) && (*LFF < 1700 || *RFF < 1700)) {
                if(x->read() > def) {
                    x->write(def);
                    forwardSafety = 1;          // You cannot move forward
