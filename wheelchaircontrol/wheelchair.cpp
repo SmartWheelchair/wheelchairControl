@@ -58,6 +58,7 @@ void Wheelchair::compass_thread()
 {
     curr_yaw = imu->yaw();
     z_angular = curr_yaw;
+    //out->printf("%f\r\n", curr_yaw);
 }
 
 /*************************************************************************
@@ -74,7 +75,7 @@ void Wheelchair::velocity_thread()
 void Wheelchair::emergencyButton_thread()
 {
 
-    while(1) {
+  /*
         if(!(e_button->read())) {//change once button is connected
         	out->printf("E-button has been pressed\r\n");
             //Stop wheelchair
@@ -89,8 +90,8 @@ void Wheelchair::emergencyButton_thread()
         else{
         	//out->printf("\r e_button has not been pressed\r\n");
         }
-    }
 
+*/
 }
 
 /*************************************************************************
@@ -104,8 +105,8 @@ void Wheelchair::ToFSafe_thread()
         //out->printf("%d ",ToFV[i]);
     }
     //out->printf("%d %d %d %d %d %d %d %d %d %d %d %d", *RBB, *RBS, *RBD, *LBS, *LBD, *LBB, *RFS, *RFF, *RFD, *LFF, *LFD, *LFS);
-    out->printf("\n");
-    //out->printf("Encoder 2 TEST = %f\n", wheel->getDistance(53.975));
+    //out->printf("\n");
+    out->printf("Encoder 2 TEST = %f, %f\n", wheel->getDistance(53.975), wheelS->getDistance(53.975));
     //out->printf("Encoder 1 TEST = %f\n", wheelS->getDistance(53.975));
 
     /**************************************************************************
@@ -158,9 +159,9 @@ void Wheelchair::ToFSafe_thread()
 //    int RFF = ToFV[6];	//forward right
 //    sensors3 = ToFV[6];
 
-    out->printf("curr_vel: %f\n", curr_vel);
-    out->printf("maxDecelerationSlow: %d\n", maxDecelerationSlow);
-    out->printf("RFF: %d, LFF: %d\n", *RFF, *LFF);
+ //   out->printf("curr_vel: %f\n", curr_vel);
+   // out->printf("maxDecelerationSlow: %d\n", maxDecelerationSlow);
+    //out->printf("RFF: %d, LFF: %d\n", *RFF, *LFF);
 
     if(curr_vel < 0.5 &&((2 * maxDecelerationSlow*(*LFF) < curr_vel*curr_vel*1000*1000 ||
                         2 * maxDecelerationSlow*(*RFF) < curr_vel*curr_vel*1000*1000) &&
@@ -491,9 +492,8 @@ Wheelchair::Wheelchair(PinName xPin, PinName yPin, Serial* pc, Timer* time, QEI*
     out = pc;                                                                           // "out" is called for serial monitor
     out->printf("on\r\n");
 //    imu = new IMUWheelchair(pc, time);
-//    imu = new BNO080Wheelchair(pc, D4, D5, D10, D8, 0x4b, 100000);
+    imu = new BNO080Wheelchair(pc, time);
     Wheelchair::stop();                                                                 // Wheelchair is initially stationary
-//    imu->setup();                                                                       // turns on the IMU
     wheelS = qeiS;                                                                      // "wheel" is called for encoder
     wheel = qei;
     ToF = ToFT;                                                                         // passes pointer with addresses of ToF sensors
@@ -515,6 +515,7 @@ Wheelchair::Wheelchair(PinName xPin, PinName yPin, Serial* pc, Timer* time, QEI*
 
     outlierToF[0] = LFDStats.mean() + 2*LFDStats.stdev();
     outlierToF[1] = RFDStats.mean() + 2*RFDStats.stdev();
+    imu->setup();                                                                       // turns on the IMU
 
     myPID.SetMode(AUTOMATIC);                                                           // PID mode: Automatic
 }

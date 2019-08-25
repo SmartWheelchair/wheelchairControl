@@ -8,13 +8,13 @@ Serial pc(USBTX, USBRX, 57600);         // Serial Monitor
  *                      Encoder Pins & Variables                          *
  **************************************************************************/
  
-QEI wheelS (D10, D9, NC, 1200);          	// Initializes right encoder
-DigitalIn pt1(D10, PullUp);             	// Pull up resistors to read analog signals into digital signals
-DigitalIn pt2(D9, PullUp);
+QEI wheelS (PC_8, PC_6, NC, 1200);          	// Initializes right encoder
+DigitalIn pt1(PC_8, PullUp);             	// Pull up resistors to read analog signals into digital signals
+DigitalIn pt2(PC_6, PullUp);
 
-QEI wheel (PF_13, PF_12, NC, 1200);         // Initializes Left encoder
-DigitalIn pt3(PF_12, PullUp);        		// Pull up resistors to read analog signals into digital signals
-DigitalIn pt4(PF_13, PullUp);
+QEI wheel (PD_2, PC_11, NC, 1200);         // Initializes Left encoder
+DigitalIn pt3(PD_2, PullUp);        		// Pull up resistors to read analog signals into digital signals
+DigitalIn pt4(PC_11, PullUp);
 
 int max_velocity;
 
@@ -46,21 +46,21 @@ bool manual = false;                    // Turns chair joystic to automatic and 
  *                      ToF Sensor Pin Assignments                        *
  **************************************************************************/
 
-VL53L1X sensor1(PD_13, PD_12, PA_15);   // Block 1
-VL53L1X sensor2(PD_13, PD_12, PC_7);
-VL53L1X sensor3(PD_13, PD_12, PB_5);
+VL53L1X sensor1(PF_0, PF_1, PE_1);   // Block 1
+VL53L1X sensor2(PF_0, PF_1, PG_9);
+VL53L1X sensor3(PF_0, PF_1, PG_12);
 
-VL53L1X sensor4(PD_13, PD_12, PE_11);   // Block 2
-VL53L1X sensor5(PD_13, PD_12, PF_14);
-VL53L1X sensor6(PD_13, PD_12, PE_13);
+VL53L1X sensor4(PF_0, PF_1, PG_10);   // Block 2
+VL53L1X sensor5(PF_0, PF_1, PG_15);
+VL53L1X sensor6(PF_0, PF_1, PA_15);
 
-VL53L1X sensor7(PD_13, PD_12, PG_15);   // Block 3
-VL53L1X sensor8(PD_13, PD_12, PG_14);
-VL53L1X sensor9(PD_13, PD_12, PG_9);
+VL53L1X sensor7(PF_0, PF_1, PG_8);   // Block 3
+VL53L1X sensor8(PF_0, PF_1, PG_5);
+VL53L1X sensor9(PF_0, PF_1, PG_6);
 
-VL53L1X sensor10(PD_13, PD_12, PE_10);  // Block 4
-VL53L1X sensor11(PD_13, PD_12, PE_12);     
-VL53L1X sensor12(PD_13, PD_12, PE_14);
+VL53L1X sensor10(PF_0, PF_1, PB_12);  // Block 4
+VL53L1X sensor11(PF_0, PF_1, PB_11);
+VL53L1X sensor12(PF_0, PF_1, PB_2);
 
 VL53L1X* ToF[12] = {&sensor1, &sensor2, &sensor3, &sensor4, &sensor5, &sensor6, 
 &sensor7, &sensor8, &sensor9, &sensor10, &sensor11, &sensor12}; // Puts ToF sensor pointers into an array
@@ -97,24 +97,24 @@ VL53L1X* ToF[12] = {&sensor1, &sensor2, &sensor3, &sensor4, &sensor5, &sensor6,
 
 //
 /*
-VL53L1X sensor1(PF_0, PF_1, PG_12);   // Block 1
-VL53L1X sensor2(PF_0, PF_1, PG_9);
-VL53L1X sensor3(PF_0, PF_1, PE_1);
+VL53L1X sensor1(PF_1, PF_0, PG_12);   // Block 1
+VL53L1X sensor2(PF_1, PF_0, PG_9);
+VL53L1X sensor3(PF_1, PF_0, PE_1);
 
-VL53L1X sensor4(PF_0, PF_1, PA_15);   // Block 2
-VL53L1X sensor5(PF_0, PF_1, PA_14);
-VL53L1X sensor6(PF_0, PF_1, PA_13);
+VL53L1X sensor4(PF_1, PF_0, PA_15);   // Block 2
+VL53L1X sensor5(PF_1, PF_0, PA_14);
+VL53L1X sensor6(PF_1, PF_0, PA_13);
 
-VL53L1X sensor7(PF_0, PF_1, PG_8);   // Block 3
-VL53L1X sensor8(PF_0, PF_1, PG_5);
-VL53L1X sensor9(PF_0, PF_1, PG_6);
+VL53L1X sensor7(PF_1, PF_0, PG_8);   // Block 3
+VL53L1X sensor8(PF_1, PF_0, PG_5);
+VL53L1X sensor9(PF_1, PF_0, PG_6);
 
-VL53L1X sensor10(PF_0, PF_1, PB_2);  // Block 4
-VL53L1X sensor11(PF_0, PF_1, PB_1);
-VL53L1X sensor12(PF_0, PF_1, PB_15);
+VL53L1X sensor10(PF_1, PF_0, PB_2);  // Block 4
+VL53L1X sensor11(PF_1, PF_0, PB_1);
+VL53L1X sensor12(PF_1, PF_0, PB_15);
 
-VL53L1X sensor13(PF_0, PF_1, PF_14);  // Middle Block - Inward ToF sensors
-VL53L1X sensor14(PF_0, PF_1, PE_9);
+VL53L1X sensor13(PF_1, PF_0, PF_04);  // Middle Block - Inward ToF sensors
+VL53L1X sensor14(PF_1, PF_0, PE_9);
 
 VL53L1X* ToF[14] = {&sensor1, &sensor2, &sensor3, &sensor4, &sensor5, &sensor6,
 &sensor7, &sensor8, &sensor9, &sensor10, &sensor11, &sensor12, &sensor13, &sensor14}; // Puts ToF sensor pointers into an array
@@ -128,18 +128,18 @@ VL53L1X** ToFT = ToF;
  **************************************************************************/
 Timer t, IMU_t;                                                 // Initialize time object t and IMU timer
 EventQueue queue;                                               // Class to organize threads
-Wheelchair smart(xDir,yDir, &pc, &IMU_t, &wheel, &wheelS, ToFT, &e_button);    // Initialize wheelchair object
 Thread compass;                                                 // Thread for compass
 Thread velocity;                                                // Thread for velocity
 Thread ToFSafe;                                                 // Thread for safety stuff
 Thread emergencyButton;                                         // Thread to check button state and reset device
+Wheelchair smart(xDir,yDir, &pc, &IMU_t, &wheel, &wheelS, ToFT, &e_button);    // Initialize wheelchair object
 
 /**************************************************************************
  *                              MAIN CODE                                 *
  **************************************************************************/
 int main(void)
 {  
- 
+
 /*  nh.initNode();
     nh.advertise(chatter);
     nh.advertise(chatter2);
@@ -148,14 +148,14 @@ int main(void)
     
 	pc.printf("Before Starting\r\n");
     
-    //queue.call_every(SAMPLEFREQ, &smart, &Wheelchair::compass_thread);        // Sets up sampling frequency of the compass thread
+    queue.call_every(20, &smart, &Wheelchair::compass_thread);        // Sets up sampling frequency of the compass thread
     queue.call_every(SAMPLEFREQ, &smart, &Wheelchair::velocity_thread);         // Sets up sampling frequency of the velocity thread
     queue.call_every(SAMPLEFREQ, &smart, &Wheelchair::ToFSafe_thread);          // Sets up sampling frequency of the ToF safety thread
     //queue.call_every(200, rosCom_thread);                                     // Sets up sampling frequency of the ROS com thread
     queue.call_every(SAMPLEFREQ, &smart, &Wheelchair::emergencyButton_thread);  // Sets up sampling frequency of the emergency button thread
     
     t.reset();
-    //compass.start(callback(&queue, &EventQueue::dispatch_forever));           // Starts running the compass thread
+    compass.start(callback(&queue, &EventQueue::dispatch_forever));           // Starts running the compass thread
     velocity.start(callback(&queue, &EventQueue::dispatch_forever));            // Starts running the velocity thread
     ToFSafe.start(callback(&queue, &EventQueue::dispatch_forever));             // Starts running the ROS com thread
     //ros_com.start(callback(&queue, &EventQueue::dispatch_forever));           // Starts running the ROS com thread

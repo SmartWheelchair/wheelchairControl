@@ -29,8 +29,8 @@
 /*************************************************************************
 *Pin plug-in for Nucleo-L432KC/Compatible with Nucleo-400 series (F767ZI)*
 **************************************************************************/
-#define yDir PA_5                       // PWM Pins
-#define xDir PA_6
+#define yDir PD_14                       // PWM Pins
+#define xDir PD_15
 #define Encoder1 D7                     // Digital In Pull Up Pin 
 #define Encoder2 D8
 #define Diameter 31.75                  // Diameter of encoder wheel

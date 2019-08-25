@@ -2,12 +2,10 @@
 float total_yaw;
 
 //The constructor for the BNO080 imu. Needs 7 parameters
-BNO080Wheelchair::BNO080Wheelchair(Serial *debugPort, PinName sdaPin, 
-                                 PinName sclPin, PinName intPin, PinName rstPin,
-                                 uint8_t i2cAddress, int i2cPortpeed) {
-    imu = new BNO080(debugPort, sdaPin, sclPin, intPin,rstPin,i2cAddress, i2cPortpeed);
+BNO080Wheelchair::BNO080Wheelchair(Serial* debugPort, Timer* time) {
+    imu = new BNO080(debugPort, SDA, SCL, INT_PIN,RST_PIN,0x4b, 100000);
     //setUp
-    
+    t = time;
 }
 //Check if all the
 bool BNO080Wheelchair::setup() {
@@ -17,7 +15,7 @@ bool BNO080Wheelchair::setup() {
     imu -> enableReport(BNO080::LINEAR_ACCELERATION, 200);
     imu -> enableReport(BNO080::GRAVITY_ACCELERATION, 200);
     imu -> enableReport(BNO080::GYROSCOPE, 200);
-    imu -> enableReport(BNO080::MAG_FIELD, 200);    
+    imu -> enableReport(BNO080::MAG_FIELD, 200);
 //    imu -> enableReport(BNO080::MAG_FIELD_UNCALIBRATED, 100);    
 //    imu -> enableReport(BNO080::ROTATION, 100);
 //    imu -> enableReport(BNO080::GEOMAGNETIC_ROTATION, 100);    
@@ -27,7 +25,8 @@ bool BNO080Wheelchair::setup() {
 //    imu -> enableReport(BNO080::STEP_DETECTOR, 100);    
 //    imu -> enableReport(BNO080::STEP_COUNTER, 100);
 //    imu -> enableReport(BNO080::SIGNIFICANT_MOTION, 100);    
-//    imu -> enableReport(BNO080::SHAKE_DETECTOR, 100);    
+//    imu -> enableReport(BNO080::SHAKE_DETECTOR, 100);
+    t->start();
     return setup;
 }
 
@@ -92,8 +91,8 @@ double BNO080Wheelchair::accel_z() {
 //Get yaw
 double BNO080Wheelchair::yaw() {
 
-    float gyroZ = .4+(BNO080Wheelchair::gyro_x())*180/3.141593;
-    if(abs(gyroZ) >= .5) {
+    float gyroZ = (BNO080Wheelchair::gyro_z())*180/3.141593;
+    if(abs(gyroZ) >= .3) {
      //printf("t->read(): %lf, gyroscope %lf, change %lf\r\n", t->read(), gyroZ, t->read()*gyroZ*2.25);
         total_yaw = total_yaw - t->read()*gyroZ;
      //printf("total_yaw: %lf, gyroZ: %f \r\n", total_yaw, gyroZ);

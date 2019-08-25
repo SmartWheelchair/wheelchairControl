@@ -68,7 +68,7 @@
 #include "BNO080Constants.h"
 /// Set to 1 to enable debug printouts.  Should be very useful if the chip is giving you trouble.
 /// When debugging, it is recommended to use the highest possible serial baudrate so as not to interrupt the timing of operations.
-#define BNO_DEBUG 1
+#define BNO_DEBUG 0
  
 BNO080::BNO080(Serial *debugPort, PinName user_SDApin, PinName user_SCLpin, PinName user_INTPin, PinName user_RSTPin,
                uint8_t i2cAddress, int i2cPortSpeed) :
@@ -1059,7 +1059,7 @@ bool BNO080::receivePacket(float timeout)
     }
  
     packetLength -= headerLen; //Remove the header bytes from the data count
-    
+    wait(.005);
     readRetval = _i2cPort.read(
         (_i2cAddress << 1) | 0x1,
         reinterpret_cast<char*>(readBuffer),
