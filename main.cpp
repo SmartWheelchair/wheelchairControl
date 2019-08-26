@@ -228,6 +228,9 @@ int main(void)
                     }
                 }   
             }
+            else if (c == 'p'){
+            	smart.desk();
+            }
             
             else {
                     pc.printf("none \r\n");

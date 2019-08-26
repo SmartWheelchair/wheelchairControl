@@ -1059,7 +1059,7 @@ bool BNO080::receivePacket(float timeout)
     }
  
     packetLength -= headerLen; //Remove the header bytes from the data count
-    wait(.005);
+    wait(.003);
     readRetval = _i2cPort.read(
         (_i2cAddress << 1) | 0x1,
         reinterpret_cast<char*>(readBuffer),

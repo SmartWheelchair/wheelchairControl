@@ -9,7 +9,7 @@
 **************************************************************************/
 bool manual_drive = false;                                                             // Variable changes between joystick and auto drive
 double encoder_distance;                                                               // Keeps distanse due to original position
-
+double curr_yaw_raw;
 volatile double Setpoint, Output, Input, Input2;                                       // Variables for PID
 volatile double pid_yaw, Distance, Setpoint2, Output2, encoder_distance2;              // Variables for PID
 volatile double vIn, vOut, vDesired;                                                   // Variables for PID Velosity
@@ -99,14 +99,14 @@ void Wheelchair::emergencyButton_thread()
 **************************************************************************/
 void Wheelchair::ToFSafe_thread()
 {
-    wait(0.01);
+    //wait(0.01);
     for(int i = 0; i < 12; i++) {                            // Reads from the ToF Sensors
         ToFV[i] = (*(ToF+i))->readFromOneSensor();
         //out->printf("%d ",ToFV[i]);
     }
     //out->printf("%d %d %d %d %d %d %d %d %d %d %d %d", *RBB, *RBS, *RBD, *LBS, *LBD, *LBB, *RFS, *RFF, *RFD, *LFF, *LFD, *LFS);
     //out->printf("\n");
-    out->printf("Encoder 2 TEST = %f, %f\n", wheel->getDistance(53.975), wheelS->getDistance(53.975));
+    //out->printf("Encoder 2 TEST = %f, %f\n", wheel->getDistance(53.975), wheelS->getDistance(53.975));
     //out->printf("Encoder 1 TEST = %f\n", wheelS->getDistance(53.975));
 
     /**************************************************************************
@@ -790,11 +790,13 @@ void Wheelchair::pid_twistA()
 
     /* Computes angular position of wheelchair while turning */
     while(1) {
-        yDesired = angularV;
+        yDesired = 180; //angularV;
 
         /* Update and set all variable so that the chair is stationary
          * if the desired angle is zero
          */
+        if(out->readable())
+            return;
         if(yDesired == 0) {
             x->write(def);
             y->write(def);
@@ -803,7 +805,8 @@ void Wheelchair::pid_twistA()
         }
 
         /* Continuously updates with current angle measured by IMU */
-        yIn = imu->gyro_z();
+        yIn = imu->gyro_z()*(180/3.1415926);
+        out->printf("%lf\r\n", yIn);
         PIDAngularV.Compute();
         temporA += yOut;                                                                // Temporary value with the voltage output
         y->write(temporA);                                                              // Update y sent to chair
@@ -823,6 +826,7 @@ void Wheelchair::pid_twistV()
     double temporV = def;
     double temporS = def+1.5*offset;
     vDesiredS = 0;
+    double initAngle = curr_yaw;
     x->write(def);
     y->write(def+1.5*offset);            //added 1.5*offset
     wheel->reset();
@@ -831,12 +835,12 @@ void Wheelchair::pid_twistV()
     //PIDVelosity.SetTunings(.0005,0, 0.00);			//0.0005
     //PIDSlaveV.SetTunings(.005,0.000001, 0.000001); //0.005
 
-    PIDVelosity.SetTunings(.0005,0, 0.00);			//0.0005
-    PIDSlaveV.SetTunings(.000007,0.000001, 0.001); 	//0.005
+    PIDVelosity.SetTunings(.0002,0, 0.00);			//0.0005
+    PIDSlaveV.SetTunings(.000002,0.000001, 0.001); 	//0.005
 
     /* Limits to the range specified */
     PIDVelosity.SetOutputLimits(-.005, .005);
-    PIDSlaveV.SetOutputLimits(-.002, .002);
+    PIDSlaveV.SetOutputLimits(-.0002, .0002);
 
     /* PID mode: Direct */
     PIDVelosity.SetControllerDirection(DIRECT);
@@ -875,25 +879,30 @@ void Wheelchair::pid_twistV()
         }
 
         /* Scales and makes some adjustments to velocity */
+
         vIn = curr_vel*100;
-        vInS = (curr_pos-curr_posS)/1000;
+        vInS = (-curr_yaw+initAngle)/5000;//(curr_pos-curr_posS)/1000;
         //vIn = curr_pos*100;
 
         PIDVelosity.Compute();
         PIDSlaveV.Compute();
-        if(forwardSafety == 0) {
+      //  if(forwardSafety == 0) {
             temporV += vOut;
             temporS += vOutS;
+
+       vInS = (curr_pos-curr_posS)/1000;
+       PIDSlaveV.Compute();
+       	   temporS += vOutS;
 
             /* Updates x,y sent to Wheelchair and for Odometry message in ROS */
             x->write(temporV);
             test2 = temporV;
             y->write(temporS);
-        } else {
+       /* } else {
             x->write(def);
             y->write(def);
-        }
-        out->printf("Velosity: %f, Velosity2: %f, temporV %f, temporS %f, posM %f, posS %f \r\n", curr_vel, curr_velS, temporV, temporS, curr_pos, curr_posS);
+        }*/
+      //  out->printf("Velosity: %f, Velosity2: %f, temporV %f, temporS %f, posM %f, posS %f \r\n", curr_vel, curr_velS, temporV, temporS, vOut, curr_posS);
         Wheelchair::odomMsg();
         wait(.005);                                                                      // Small delay (milliseconds)
     }
@@ -1014,11 +1023,14 @@ void Wheelchair::resetDistance()
 /*Predetermined paths For Demmo*/
 void Wheelchair::desk()
 {
+	imu->calibrate();
+/*
     Wheelchair::pid_forward(5461);
     Wheelchair::pid_right(87);
     Wheelchair::pid_forward(3658);
     Wheelchair::pid_right(87);
     Wheelchair::pid_forward(3658);
+    */
 }
 
 void Wheelchair::kitchen()

@@ -95,7 +95,7 @@ double BNO080Wheelchair::yaw() {
     if(abs(gyroZ) >= .3) {
      //printf("t->read(): %lf, gyroscope %lf, change %lf\r\n", t->read(), gyroZ, t->read()*gyroZ*2.25);
         total_yaw = total_yaw - t->read()*gyroZ;
-     //printf("total_yaw: %lf, gyroZ: %f \r\n", total_yaw, gyroZ);
+     //printf("total_yaw: %lf, gyroZ: %f \r\n", total_yaw, curr_yaw_rawgyroZ);
     }
     t->reset();
     if(total_yaw > 360)
@@ -164,6 +164,23 @@ TVector4 BNO080Wheelchair::rotation() {
     imu -> updateData();
     //wait(0.05);
     return imu -> rotationVector.vector();
+}
+
+bool BNO080Wheelchair::calibrate(){
+	wait(0.02);
+	if(imu -> enableCalibration(true, true, false)){
+		wait(0.02);
+		if(imu ->saveCalibration()){
+			printf("Calibration is saved\r\n");
+			return true;
+		}
+		printf("Calibration is enabled, but not saved\r\n");
+		return true;
+	}
+	else{
+		printf("Calibration failed\r\n");
+		return false;
+	}
 }
 
 /*

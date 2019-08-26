@@ -74,7 +74,7 @@ class BNO080Wheelchair {
         double rot_x();
         double rot_y();
         double rot_z();
-
+        bool calibrate();
 
 
     private:
