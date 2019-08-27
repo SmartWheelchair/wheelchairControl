@@ -8,7 +8,7 @@ Serial pc(USBTX, USBRX, 57600);         // Serial Monitor
  *                      Encoder Pins & Variables                          *
  **************************************************************************/
  
-QEI wheelS (PC_8, PC_6, NC, 1200);          	// Initializes right encoder
+QEI wheelS (PC_6, PC_8, NC, 1200);          	// Initializes right encoder
 DigitalIn pt1(PC_8, PullUp);             	// Pull up resistors to read analog signals into digital signals
 DigitalIn pt2(PC_6, PullUp);
 
@@ -22,7 +22,7 @@ int max_velocity;
  *        Variables and Pins for Watchdog and Emergency Button            *
  **************************************************************************/
  
-DigitalIn e_button(PE_9, PullDown);      // Change to PullUp if testing without Emergency Button Connected
+DigitalIn e_button(PC_9, PullDown);      // Change to PullUp if testing without Emergency Button Connected
 PwmOut on(PE_6);                        // Turn Wheelchair On
 PwmOut off(PE_5);                       // Turn Wheelchair Off
 

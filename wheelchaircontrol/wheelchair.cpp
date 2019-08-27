@@ -75,7 +75,7 @@ void Wheelchair::velocity_thread()
 void Wheelchair::emergencyButton_thread()
 {
 
-  /*
+
         if(!(e_button->read())) {//change once button is connected
         	out->printf("E-button has been pressed\r\n");
             //Stop wheelchair
@@ -91,7 +91,7 @@ void Wheelchair::emergencyButton_thread()
         	//out->printf("\r e_button has not been pressed\r\n");
         }
 
-*/
+
 }
 
 /*************************************************************************
