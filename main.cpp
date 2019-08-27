@@ -62,8 +62,11 @@ VL53L1X sensor10(PF_0, PF_1, PB_12);  // Block 4
 VL53L1X sensor11(PF_0, PF_1, PB_11);
 VL53L1X sensor12(PF_0, PF_1, PB_2);
 
-VL53L1X* ToF[12] = {&sensor1, &sensor2, &sensor3, &sensor4, &sensor5, &sensor6, 
-&sensor7, &sensor8, &sensor9, &sensor10, &sensor11, &sensor12}; // Puts ToF sensor pointers into an array
+VL53L1X sensor13(PF_0, PF_1, PE_9);  // Block 5 //Right
+VL53L1X sensor14(PF_0, PF_1, PB_1);				//Left
+
+VL53L1X* ToF[14] = {&sensor1, &sensor2, &sensor3, &sensor4, &sensor5, &sensor6,
+&sensor7, &sensor8, &sensor9, &sensor10, &sensor11, &sensor12, &sensor13, &sensor14}; // Puts ToF sensor pointers into an array
 
 /**************************************************************************
  *                      ToF ARRAY ASSIGNMENTS

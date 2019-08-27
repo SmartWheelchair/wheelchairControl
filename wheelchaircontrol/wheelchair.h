@@ -224,15 +224,15 @@ public:
     bool rightSafety;           //to check if can turn right
     double curr_yaw, curr_velS; // Variable that contains current relative angle
 
-    int* LFF = &ToFV[9];  //Left Front Forward
-    int* LFS = &ToFV[11]; //Left Front Side
-	int* LFA = &ToFV[999];       //Left Front Angle
-	int* LFD = &ToFV[10]; //Left Front Down
+    int* LFF = &ToFV[11];  //Left Front Forward
+    int* LFS = &ToFV[10]; //Left Front Side
+	int* LFA = &ToFV[13];       //Left Front Angle
+	int* LFD = &ToFV[9]; //Left Front Down
 
-	int* RFF = &ToFV[8];  //Right Front Forward
-	int* RFS = &ToFV[6];  //Right Front Side
-	int* RFA = &ToFV[999];;       //Right Front Angle
-	int* RFD = &ToFV[7];  //Right Front Down
+	int* RFF = &ToFV[7];  //Right Front Forward
+	int* RFS = &ToFV[8];  //Right Front Side
+	int* RFA = &ToFV[12]; //Right Front Angle
+	int* RFD = &ToFV[6];  //Right Front Down
 
 	int* LBB = &ToFV[5];  //Left Back Forward
 	int* LBS = &ToFV[3];  //Left Back Side
