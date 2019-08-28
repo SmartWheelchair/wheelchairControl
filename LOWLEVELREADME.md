@@ -18,7 +18,7 @@ when it is dangerously close to a ledge.
   Two sensors each are placed on the front and rear (on both the left and right sides). The front two sensors are specifically used
   for Forward Safety, while the two rear sensors are used for Backward Safety.
   
-  Forward Safety is implemented using an if-else statement command, with 4 if/else if cases, apart from the default else case.
+  **Forward Safety** is implemented using an if-else statement command, with 4 if/else if cases, apart from the default else case.
   If any of the if/else if cases are triggered, the variable forwardSafety is set to 1, which prevents the wheelchair from moving
   forward. If none of these cases are triggered, forwardSafety is set to 0 by default, which allows the wheelchair to move forward.
   In each of the following cases, obstacle detection can be done by either one or both of the two front time of flight sensors.
@@ -50,30 +50,25 @@ when it is dangerously close to a ledge.
   **Case 3** is used when the wheelchair is travelling at high speeds. This case depends solely on readings from the time of flight
   sensors, and enables forward safety when an obstacle is too close (based on testing at high speeds).
   
-  
-
+  **Backward Safety** is implemented exactly like Forward Safety, with symmetrical cases for the rear time of flight sensors. One key
+  difference is that the current velocity is negative when the wheelchair is moving backwards; therefore, the velocity condition in any
+  of the cases has an inverted comparator.
 
 #### 2. Side Safety
   
-  Our goal is to use latest affordable, efficient sensors to create power kits that can be mounted on electric wheelchairs to give our
-  users assistive autonomy. Moreover, we aim to deliver a fully functional sensor-integrated affordable modular design that can be replicated 
-  by others in a feasable manner. Our kit will allow users to have a low-level autonomous system feature to help navigate through tight spaces
-  such as a narrow hallway or a narrow entrance. Moreover, with our safety feature implementations, we make sure our users stay safe and have 
-  full control of their electric chair will using our system
+TBA
   
 #### 3. Ledge Detection
   
-  Our goal is to use latest affordable, efficient sensors to create power kits that can be mounted on electric wheelchairs to give our
-  users assistive autonomy. Moreover, we aim to deliver a fully functional sensor-integrated affordable modular design that can be replicated 
-  by others in a feasable manner. Our kit will allow users to have a low-level autonomous system feature to help navigate through tight spaces
-  such as a narrow hallway or a narrow entrance. Moreover, with our safety feature implementations, we make sure our users stay safe and have 
-  full control of their electric chair will using our system
-  ## Implementation
+TBA
   
 ### Watchdog Timer
 
+TBA
+
 ### Emergency Stop Button
   
+TBA
 
 ## Contact
 **Website:** http://smartwheelchair.eng.ucsd.edu/  
