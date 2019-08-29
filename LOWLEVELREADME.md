@@ -100,7 +100,7 @@ To ensure the angular velocity is within the range, we use the following compari
 
 Ledge Detection is a low-level control to safely brake the wheelchair when heading towards ledges. This uses 4 time of flight sensors (2 in the front + 2 in the rear) that are angled at approximately 20 degrees from the horizontal. Therefore, these time of flight sensors can indicate the distance of the floor from the sensors, which is used to detect "ledges" (such as steps or door thresholds). 
 
-A running average of the latest few readings from each of the angled time of flight sensors is stored in an array, and if the newer readings differ from this mean by more than 2 standard deviations, it is flagged as a ledge, and stops the wheelchair.
+A running average of the latest few readings from each of the angled time of flight sensors is stored in an array, and if these averages differ from the *calibration mean* by more than 2 standard deviations, it is flagged as a ledge, and stops the wheelchair.
 
 #### Statistics Library
 
@@ -112,7 +112,7 @@ The ```runningAverage[]``` array stores the average of *recent* readings from ea
 
 The ```ledgeArrayLF```, ```ledgeArrayRF```, ```ledgeArrayLB``` and ```ledgeArrayRB``` arrays store the first 100 values the time of flight sensors read (each array corresponds to readings from a distinct time of flight sensor) for calibration.
 
-The ```outlierToF[]``` array stores the threshold value for detecting a ledge, i.e., any value greater than the outlier value would indicate the presence of the ledge. The threshold value is calculated as the means of the calubration values, plus twice the standard deviation from mean. 
+The ```outlierToF[]``` array stores the threshold value for detecting a ledge, i.e., any value greater than the outlier value would indicate the presence of the ledge. The threshold value is calculated as the means of the calibration values (*calibration mean*), plus twice the standard deviation from mean. 
 
 Example: ```outlierToF[0] = LFDStats.mean() + 2*LFDStats.stdev();``` 
 
