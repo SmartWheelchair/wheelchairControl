@@ -86,16 +86,45 @@ The second condition is met when the velocity of the wheelchair is determined to
 
 where α is the angular acceleration of the wheelchair (which is a fixed negative value, since the chair must decelerate to stop), ω is the final angular velocity (which is 0 for the chair to stop turning), ω0 is the initial angular velocity (which is the angular velocity at which the wheelchair is travelling before it begins to stop turning), and Δθ is the stopping angle.
 
+To ensure the angular velocity is within the range, we use the following comparison:
 
+<img src="https://latex.codecogs.com/gif.latex?%5Comega%20%5E2%20%3C%202%5Calpha%28%20%5CDelta%20%5Ctheta%20%29"> or, currAngularVelocity × currAngularVelocity > 2 × maxAngularDeceleration × angle
 
-**Case 2 (B)**
+  Note that maxAngularDeceleration is a positive number, which is why the comparator is flipped.
 
-**Case 2 (C)**
+**Case 2 (B)** works exactly like Case 2 (A), except it uses side-facing sensor in the rear for obstacle detection.
 
+**Case 2 (C)** works exactly like Case 2 (A), except it uses the left blindspot sensor for obstacle detection.
+
+**Right Safety** works in an identical fashion as Left Safety, with symmetric cases using the sensors on the right side of the wheelchair.
  
-#### 3. Ledge Detection
-  
-TBA
+### IMU (BNO080) Wrapper Function
+
+A wrapper is simply a function that exists to call another function. Meaning we do not have to change the functionality of the main function we are calling from, if there are any changes needed we will make the necessary changes in the wrapper function. In the BNO wrapper function we call the necessary functions needed while making the code alot more clearer and easier to read. 
+
+In our code BNO080.cpp and BNO080.h is the main function and BNO080Wheelchair.cpp and BNO080Wheelchair.h is the wrapper function. The wrapper function is about 600 lines shorter than the main function. As stated earlier, this makes it a lot easier to read and to make the necessary adjustments based on the team needs.
+
+Parameters that we are able to receive from the IMU are accelerometer, gyroscope and magnetometers. The main two that we are using are the accelerometer and the gyroscope. We are using gyro_z  which is currAngularVelocity. We then place that variable in a kinematic equation in the wheelchair.cpp file.
+
+→ BNO080Wheelchair::yaw() 
+
+This method returns the total yaw.
+
+We call the gyro_z() from the BNO080 and convert it from radians to degrees
+We then calculate the total yaw based on the running time
+
+If the rotation is more than 360 deg then we go back to zero. In this sense, we wrap around from 0 to 360. Similarly, if rotation is less than -360 deg, we wrap around from -360 to 0.
+
+
+
+
+
+
+
+
+
+
+
   
 ### Watchdog Timer
 
