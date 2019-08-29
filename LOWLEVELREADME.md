@@ -121,7 +121,7 @@ If the ```runningAverage[?]``` value is higher than the corresponding ```outlier
 
 ### IMU (BNO080) Wrapper Function
 
-A wrapper is simply a function thaoutlierToF[0] = LFDStats.mean() + 2*LFDStats.stdev();t exists to call another function. Meaning we do not have to change the functionality of the main function we are calling from, if there are any changes needed we will make the necessary changes in the wrapper function. In the BNO wrapper function we call the necessary functions needed while making the code alot more clearer and easier to read. 
+A wrapper is simply a function that exists to call another function. Meaning we do not have to change the functionality of the main function we are calling from, if there are any changes needed we will make the necessary changes in the wrapper function. In the BNO wrapper function we call the necessary functions needed while making the code alot more clearer and easier to read. 
 
 In our code ```BNO080.cpp``` and ```BNO080.h``` is the main function and ```BNO080Wheelchair.cpp``` and ```BNO080Wheelchair.h``` is the wrapper function. The wrapper function is about 600 lines shorter than the main function. As stated earlier, this makes it a lot easier to read and to make the necessary adjustments based on the team needs.
 
