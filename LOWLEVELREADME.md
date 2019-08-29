@@ -18,8 +18,8 @@ when the wheelchair is dangerously close to a ledge.
   Two sensors each are placed on the front and rear (on both the left and right sides), facing frontwards. The front two sensors are specifically used for Forward Safety, while the two rear sensors are used for Backward Safety. The reading from the time of flight sensors is combined with the current velocity readings from the encoders to implement Forward & Backward Safety.
   
   **Forward Safety** is implemented using an if-else statement command, with 4 if/else if cases, apart from the default else case.
-  If any of the if/else if cases are triggered, the variable forwardSafety is set to 1, which prevents the wheelchair from moving
-  forward. If none of these cases are triggered, forwardSafety is set to 0 by default, which allows the wheelchair to move forward.
+  If any of the if/else if cases are triggered, the variable ```forwardSafety``` is set to 1, which prevents the wheelchair from moving
+  forward. If none of these cases are triggered, ```forwardSafety``` is set to 0 by default, which allows the wheelchair to move forward.
   In each of the following cases, obstacle detection can be done by either one or both of the two front time of flight sensors.
   
   **Case 1 (A)** is used when the wheelchair is travelling at low speeds. For the case to be triggered, three conditions must be met:
@@ -35,9 +35,9 @@ when the wheelchair is dangerously close to a ledge.
   
   Conditions 1 & 2 are determined based on testing. Condition 3 is met when, using the above equation,
   
-  <img src="https://latex.codecogs.com/gif.latex?2as%20%3E%20-u%5E2">   or, 2 × maxDecelerationSlow × (Time of Flight Reading) < curr_vel × curr_vel × 1000 × 1000
+  <img src="https://latex.codecogs.com/gif.latex?2as%20%3E%20-u%5E2">   or, ```2 * maxDecelerationSlow * (Time of Flight Reading) < curr_vel * curr_vel * 1000 * 1000```
   
-  Note that maxDeceleration is a positive number, which is why the comparator is flipped.
+  Note that ```maxDeceleration``` is a positive number, which is why the comparator is flipped.
   
   **Case 1 (B)** is used when the wheelchair is very close to an obstacle. This case depends solely on readings from the time of flight
   sensors, and enables forward safety when an obstacle is too close (based on testing).
@@ -61,16 +61,16 @@ when the wheelchair is dangerously close to a ledge.
  ///Some description of these variables
  
  **Left Safety** is implemented using an if-else statement command, with 5 if/else if cases, apart from the default else case.
-  If any of the if/else if cases are triggered, the variable leftSafety is set to 1, which prevents the wheelchair from turning
-  left. If none of these cases are triggered, leftSafety is set to 0 by default, which allows the wheelchair to turn left.
+  If any of the if/else if cases are triggered, the variable ```leftSafety``` is set to 1, which prevents the wheelchair from turning
+  left. If none of these cases are triggered, ```leftSafety``` is set to 0 by default, which allows the wheelchair to turn left.
 
 **Case 1 (A)** is used when the wheelchair detects a closeby obstacle in its turning path. This case solely depends on readings from the time of flight sensors, specifically either one or both of the sideways facing sensors on the left side of the wheelchair.
 
-When either/both of these sensors detect an obstacle closer than a fixed distance (called minWallLength), leftSafety is set to 1, preventing turning to the left.
+When either/both of these sensors detect an obstacle closer than a fixed distance (called ```minWallLength```), ```leftSafety``` is set to 1, preventing turning to the left.
 
 **Case 1 (B)** is used when the wheelchair detects an obstacle in its left "blindspot" area, i.e., the area between the front and rear wheels of the wheelchair on its left side. 
 
-When the blindspot sensor detects an obstacle closer than a fixed distance, leftSafety is set to 1, preventing turning to the left.
+When the blindspot sensor detects an obstacle closer than a fixed distance, ```leftSafety``` is set to 1, preventing turning to the left.
 
 **Case 2 (A)** is used when the wheelchair is turning at an unsafe speed towards the left, using the left sensor on the front, facing sideways. 
 
@@ -78,7 +78,7 @@ For this case to be triggered, two conditions must be met:
 1. The wheelchair detects an obstacle in its path that can potentially obstruct the movement of the wheelchair
 2. The wheelchair is turning with angular velocity just within the range to stop it safely
 
-The first condition is met when the reading from the side-facing time of flight sensor is smaller than the arcLength (plus an offset, which can be determined by testing), which indicates potential obstruction in the wheelchair's turning path.
+The first condition is met when the reading from the side-facing time of flight sensor is smaller than the ```arcLength``` (plus an offset, which can be determined by testing), which indicates potential obstruction in the wheelchair's turning path.
 
 The second condition is met when the velocity of the wheelchair is determined to be within the range to stop it before it hits the obstacle, as obtained from the following angular kinematics equation:
 
@@ -88,9 +88,9 @@ where α is the angular acceleration of the wheelchair (which is a fixed negativ
 
 To ensure the angular velocity is within the range, we use the following comparison:
 
-<img src="https://latex.codecogs.com/gif.latex?%5Comega%20%5E2%20%3C%202%5Calpha%28%20%5CDelta%20%5Ctheta%20%29"> or, currAngularVelocity × currAngularVelocity > 2 × maxAngularDeceleration × angle
+<img src="https://latex.codecogs.com/gif.latex?%5Comega%20%5E2%20%3C%202%5Calpha%28%20%5CDelta%20%5Ctheta%20%29"> or, ```currAngularVelocity * currAngularVelocity > 2 * maxAngularDeceleration * angle```
 
-  Note that maxAngularDeceleration is a positive number, which is why the comparator is flipped.
+  Note that ```maxAngularDeceleration``` is a positive number, which is why the comparator is flipped.
 
 **Case 2 (B)** works exactly like Case 2 (A), except it uses side-facing sensor in the rear for obstacle detection.
 
@@ -117,11 +117,27 @@ If the rotation is more than 360 deg then we go back to zero. In this sense, we 
   
 ### Watchdog Timer
 
-TBA
+The watchdog timer is a safety device that automatically resets system if not periodically serviced
+It is a separate piece of hardware, located on the development board, but independent from the microcontroller.
+
+```dog.Configure(watchdogLimit);``` sets up the Watchdog timer in the code, which will reset the entire code after ```watchdogLimit``` milliseconds, if it is not serviced before then.
+
+```dog.Service();``` occurs at the end of the main while loop, which services the timer. As a result, under normal function, the Watchdog Timer system reset would not be triggered; however, if the while loop takes unusually long to execute, the Watchdog Timer will reset the entire system as this would be detected as an issue.
 
 ### Emergency Stop Button
   
-TBA
+The Safety device that automatically resets system if not periodically serviced
+Features
+Separate hardware, independent from microcontroller
+Identifies unusually slow execution of main code
+and incompletion of loop iteration as bugs
+Functioning
+Timer run parallel to main code execution 
+Timer serviced (restarted) at the end of every loop 
+iteration of main code
+Automatically generates system reset if not 
+serviced at regular intervals
+
 
 ## Contact
 **Website:** http://smartwheelchair.eng.ucsd.edu/  
