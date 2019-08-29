@@ -96,9 +96,32 @@ To ensure the angular velocity is within the range, we use the following compari
 
 **Right Safety** works in an identical fashion as Left Safety, with symmetric cases using the sensors on the right side of the wheelchair.
  
+### Ledge Detection
+
+Ledge Detection is a low-level control to safely brake the wheelchair when heading towards ledges. This uses 4 time of flight sensors (2 in the front + 2 in the rear) that are angled at approximately 20 degrees from the horizontal. Therefore, these time of flight sensors can indicate the distance of the floor from the sensors, which is used to detect "ledges" (such as steps or door thresholds). 
+
+A running average of the latest few readings from each of the angled time of flight sensors is stored in an array, and if the newer readings differ from this mean by more than 2 standard deviations, it is flagged as a ledge, and stops the wheelchair.
+
+#### Statistics Library
+
+The Statistics Library, ```Statistics.h``` and ```Statistics.cpp```, includes functions to calculate the mean - ```mean()``` - and standard deviation - ```stdev()``` - of the input data, using standard mathemtical formulae.  
+
+#### Forward & Backward Ledge Detection
+
+The ```runningAverage[]``` array stores the average of *recent* readings from each of the 4 time of flight sensors as 4 elements in the array. 
+
+The ```ledgeArrayLF```, ```ledgeArrayRF```, ```ledgeArrayLB``` and ```ledgeArrayRB``` arrays store the first 100 values the time of flight sensors read (each array corresponds to readings from a distinct time of flight sensor) for calibration.
+
+The ```outlierToF[]``` array stores the threshold value for detecting a ledge, i.e., any value greater than the outlier value would indicate the presence of the ledge. The threshold value is calculated as the means of the calubration values, plus twice the standard deviation from mean. 
+
+Example: ```outlierToF[0] = LFDStats.mean() + 2*LFDStats.stdev();``` 
+
+If the ```runningAverage[?]``` value is higher than the corresponding ```outlierToF[?]``` value, the wheelchair is stopped by setting either ```forwardSafety``` or ```backwardSafety``` to 1, depending on whether the ledge has been detected on the front or the back, respectively.
+
+
 ### IMU (BNO080) Wrapper Function
 
-A wrapper is simply a function that exists to call another function. Meaning we do not have to change the functionality of the main function we are calling from, if there are any changes needed we will make the necessary changes in the wrapper function. In the BNO wrapper function we call the necessary functions needed while making the code alot more clearer and easier to read. 
+A wrapper is simply a function thaoutlierToF[0] = LFDStats.mean() + 2*LFDStats.stdev();t exists to call another function. Meaning we do not have to change the functionality of the main function we are calling from, if there are any changes needed we will make the necessary changes in the wrapper function. In the BNO wrapper function we call the necessary functions needed while making the code alot more clearer and easier to read. 
 
 In our code ```BNO080.cpp``` and ```BNO080.h``` is the main function and ```BNO080Wheelchair.cpp``` and ```BNO080Wheelchair.h``` is the wrapper function. The wrapper function is about 600 lines shorter than the main function. As stated earlier, this makes it a lot easier to read and to make the necessary adjustments based on the team needs.
 
