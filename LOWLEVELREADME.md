@@ -22,19 +22,16 @@ when it is dangerously close to a ledge.
   forward. If none of these cases are triggered, forwardSafety is set to 0 by default, which allows the wheelchair to move forward.
   In each of the following cases, obstacle detection can be done by either one or both of the two front time of flight sensors.
   
-  **Case 1 (A)** is used when the wheelchair is travelling at low speeds. The case triggers when it meets three conditions:
-  1. It is travelling at low speeds.
-  2. The chair is at a certain "reasonably close" distance from an obstacle.
-  3. The velocity of the chair is just within the range to stop it safely.
+  **Case 1 (A)** is used when the wheelchair is travelling at low speeds. For the case to be triggered, three conditions must be met:
+  1. The wheelchair is travelling at low speeds.
+  2. The wheelchair is at a certain "reasonably close" distance from an obstacle.
+  3. The velocity of the wheelchair is just within the range to stop it safely.
   
-  The speed of the chair is determined from the reading from the encoders (in m/s). The distance from the obstacle is measured using the time
-  of flight sensors (in mm). To determine if the velocity of the wheelchair is within the safe range, the following kinematic equation is used:
+  The speed of the chair is determined from the reading from the encoders (in m/s). The distance from the obstacle is measured using the time of flight sensors (in mm). To determine if the velocity of the wheelchair is within the safe range, the following kinematic equation is used:
   
   <img src="https://latex.codecogs.com/gif.latex?2as%20%3D%20v%5E2%20-%20u%5E2">
   
-  where a is the acceleration of the wheelchair (which is a fixed negative value, since the chair must decelerate to stop), v is the final velocity (which is 
-  0 for the chair to stop), u is the initial velocity (which is the velocity at which the wheelchair is travelling before it begins to stop), and
-  s is the stopping distance.
+  where a is the acceleration of the wheelchair (which is a fixed negative value, since the chair must decelerate to stop), v is the final velocity (which is 0 for the chair to stop), u is the initial velocity (which is the velocity at which the wheelchair is travelling before it begins to stop), and s is the stopping distance.
   
   Conditions 1 & 2 are determined based on testing. Condition 3 is met when, using the above equation,
   
@@ -56,7 +53,7 @@ when it is dangerously close to a ledge.
 #### 2. Side Safety
   
   Six sensors in total are used to implement the Side Safety part of the code, which has two parts: Left Safety, and Right Safety.
-  Two sensors each are placed on the front and rear (on both the left and right sides), facing sideways. Additionally, a sensor is      placed on each side on the front, facing backwards, into the area between the front and rear wheels of the wheelchair.
+  Two sensors each are placed on the front and rear (on both the left and right sides), facing sideways. Additionally, a sensor is      placed on each side on the front, facing backwards, into the area between the front and rear wheels of the wheelchair (called the blindspot sensor).
  The three sensors on the left side of the wheelchair are used for Left Safety, and the remaining three sensors on the right side of the wheelchair are used for Right Safety.
  The reading from the time of flight sensors is combined with the angular velocity, angle, and arclength readings from the encoders to implement Side Safety.
  
@@ -64,7 +61,26 @@ when it is dangerously close to a ledge.
   If any of the if/else if cases are triggered, the variable leftSafety is set to 1, which prevents the wheelchair from turning
   left. If none of these cases are triggered, leftSafety is set to 0 by default, which allows the wheelchair to turn left.
 
-**Case 1 (A)**
+**Case 1 (A)** is used when the wheelchair detects a closeby obstacle in its turning path. This case solely depends on readings from the time of flight sensors, specifically either one or both of the sideways facing sensors on the left side of the wheelchair.
+
+When either/both of these sensors detect an obstacle closer than a fixed distance (called minWallLength), leftSafety is set to 1, preventing turning to the left.
+
+**Case 1 (B)** is used when the wheelchair detects an obstacle in its left "blindspot" area, i.e., the area between the front and rear wheels of the wheelchair on its left side. 
+
+When the blindspot sensor detects an obstacle closer than a fixed distance, leftSafety is set to 1, preventing turning to the left.
+
+**Case 2 (A)** is used when the wheelchair is turning at an unsafe speed towards the left, using the left sensor on the front, facing sideways. 
+
+For this case to be triggered, two conditions must be met:
+1. The wheelchair detects an obstacle in its path that can potentially obstruct the movement of the wheelchair
+2. The wheelchair is turning with angular velocity just within the range to stop it safely
+
+
+
+**Case 2 (B)**
+
+**Case 2 (C)**
+
  
 #### 3. Ledge Detection
   
