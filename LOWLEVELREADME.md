@@ -56,10 +56,8 @@ when the wheelchair is dangerously close to a ledge.
   Six sensors in total are used to implement the Side Safety part of the code, which has two parts: Left Safety, and Right Safety.
   Two sensors each are placed on the front and rear (on both the left and right sides), facing sideways. Additionally, a sensor is      placed on each side on the front, facing backwards, into the area between the front and rear wheels of the wheelchair (called the blindspot sensor).
  The three sensors on the left side of the wheelchair are used for Left Safety, and the remaining three sensors on the right side of the wheelchair are used for Right Safety.
- The reading from the time of flight sensors is combined with the angular velocity, angle, and arclength readings from the encoders to implement Side Safety.
- 
- ///Some description of these variables
- 
+ The reading from the time of flight sensors is combined with the angular velocity (```currAngularVelocity```), angle (```angle```), and arclength (```arcLength```) readings from the encoders to implement Side Safety.
+
  **Left Safety** is implemented using an if-else statement command, with 5 if/else if cases, apart from the default else case.
   If any of the if/else if cases are triggered, the variable ```leftSafety``` is set to 1, which prevents the wheelchair from turning
   left. If none of these cases are triggered, ```leftSafety``` is set to 0 by default, which allows the wheelchair to turn left.
@@ -126,18 +124,9 @@ It is a separate piece of hardware, located on the development board, but indepe
 
 ### Emergency Stop Button
   
-The Safety device that automatically resets system if not periodically serviced
-Features
-Separate hardware, independent from microcontroller
-Identifies unusually slow execution of main code
-and incompletion of loop iteration as bugs
-Functioning
-Timer run parallel to main code execution 
-Timer serviced (restarted) at the end of every loop 
-iteration of main code
-Automatically generates system reset if not 
-serviced at regular intervals
+The emergency stop button can be pressed by users at any time to stop the wheelchair and reset the code. The code will continue to be reset until the button is released by turning the button knob.
 
+The ```emergencyButton_thread()```, which runs in parallel to the main code, constantly polls to check if the emergency button has been pressed. If it detects the button has been pressed, it immediately sends a system reset command to the microcontroller ```NVIC_SystemReset()```, overriding other tasks. 
 
 ## Contact
 **Website:** http://smartwheelchair.eng.ucsd.edu/  
