@@ -30,6 +30,36 @@
 </p>
 
 
+## Our Modular Design
+
+  Our current modular design is shown below. There are some components missing in the images, however, they are attached on the wheelchair.
+  
+<p align="left">
+  <img src="https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/Smart_Wheelchair_Modular_Design.PNG" width="750">
+</p>
+
+
+## 3D parts
+
+These are the 3D printed parts that were used to enclose all of the sensors.
+
+<p align="left">
+  <img src="https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/Emergency_Button.PNG" width="250">
+  <img src="https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/Encoder_Mount.PNG" width="250">
+  <img src="https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/ToF_Back_Left.PNG" width="250">
+</p>
+
+<p align="left">
+  <img src="https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/ToF_Back_Right.PNG" width="250">
+  <img src="https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/ToF_Front_Left.PNG" width="250">
+  <img src="https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/ToF_Front_Left_Holder.PNG" width="250">
+</p>
+
+<p align="left">
+  <img src="https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/ToF_Front_Right.PNG" width="250">
+  <img src="https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/ToF_Front_Right_Holder.PNG" width="250">
+</p>
+
 ## Contact
 **Website:** http://smartwheelchair.eng.ucsd.edu/  
 **Phone:** (619) 836-8052  
