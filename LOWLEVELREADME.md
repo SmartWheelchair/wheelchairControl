@@ -15,8 +15,7 @@ when it is dangerously close to a ledge.
 #### 1. Forward & Backward Safety
   
   Four sensors in total are used to implement the Forward and Backward Safety parts of the code.
-  Two sensors each are placed on the front and rear (on both the left and right sides). The front two sensors are specifically used
-  for Forward Safety, while the two rear sensors are used for Backward Safety.
+  Two sensors each are placed on the front and rear (on both the left and right sides), facing frontwards. The front two sensors are specifically used for Forward Safety, while the two rear sensors are used for Backward Safety. The reading from the time of flight sensors is combined with the current velocity readings from the encoders to implement Forward & Backward Safety.
   
   **Forward Safety** is implemented using an if-else statement command, with 4 if/else if cases, apart from the default else case.
   If any of the if/else if cases are triggered, the variable forwardSafety is set to 1, which prevents the wheelchair from moving
@@ -56,8 +55,17 @@ when it is dangerously close to a ledge.
 
 #### 2. Side Safety
   
-TBA
-  
+  Six sensors in total are used to implement the Side Safety part of the code, which has two parts: Left Safety, and Right Safety.
+  Two sensors each are placed on the front and rear (on both the left and right sides), facing sideways. Additionally, a sensor is      placed on each side on the front, facing backwards, into the area between the front and rear wheels of the wheelchair.
+ The three sensors on the left side of the wheelchair are used for Left Safety, and the remaining three sensors on the right side of the wheelchair are used for Right Safety.
+ The reading from the time of flight sensors is combined with the angular velocity, angle, and arclength readings from the encoders to implement Side Safety.
+ 
+ **Left Safety** is implemented using an if-else statement command, with 5 if/else if cases, apart from the default else case.
+  If any of the if/else if cases are triggered, the variable leftSafety is set to 1, which prevents the wheelchair from turning
+  left. If none of these cases are triggered, leftSafety is set to 0 by default, which allows the wheelchair to turn left.
+
+**Case 1 (A)**
+ 
 #### 3. Ledge Detection
   
 TBA
