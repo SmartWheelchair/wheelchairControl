@@ -37,11 +37,12 @@ when it is dangerously close to a ledge.
   
   <img src="https://latex.codecogs.com/gif.latex?2as%20%3E%20-u%5E2">   or, 2 × maxDecelerationSlow × (Time of Flight Reading) < curr_vel × curr_vel × 1000 × 1000
   
+  Note that maxDeceleration is a positive number, which is why the comparator is flipped.
+  
   **Case 1 (B)** is used when the wheelchair is very close to an obstacle. This case depends solely on readings from the time of flight
   sensors, and enables forward safety when an obstacle is too close (based on testing).
   
-  **Case 2** is used when the wheelchair is travelling at medium speeds. This works exactly like Case 1 (A), except the deceleration value 
-  and the "reasonably close" distance value is determined based on testing the wheelchair at medium speeds.
+  **Case 2** is used when the wheelchair is travelling at medium speeds. This works exactly like Case 1 (A), except the deceleration value is lower (called maxDecelerationFast) and the "reasonably close" distance value is determined based on testing the wheelchair at medium speeds.
   
   **Case 3** is used when the wheelchair is travelling at high speeds. This case depends solely on readings from the time of flight
   sensors, and enables forward safety when an obstacle is too close (based on testing at high speeds).
