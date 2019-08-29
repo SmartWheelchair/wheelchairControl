@@ -1,3 +1,5 @@
+![alt text](https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/UCSD_Wheelchair_Team_Logo.png "Logo")
+
 This document will walk you through how we share our code and how we use the development environment and debugger.
 
 Code management:
