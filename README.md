@@ -15,12 +15,20 @@
   
   <img src="https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/STM32_Nucleo_F767ZI.PNG" width="500">
 
-  We are currently using the VL53L1X time of flight distance sensors to aid with safety features. The sensors return the distance that an object is from the wheelchair and based on this information, the wheelchair slows down and halts. Moreover, it is used to help our users navigate in a straight line if they are in a narrow hallway, to avoid running over a ledge, and to stop the chair from colliding with a wall or object in front of it. 
+  We are currently using the VL53L1X time of flight distance sensors to aid with safety features. The sensors return the distance that an object is from the wheelchair and based on this information, the wheelchair slows down and halts if necessary. The sensors are also used to avoid running over a ledge, and to stop the chair from colliding with a wall or object in front of it. We also use the distance sensors to help our users navigate in a straight line if they are in a narrow hallway or to aid with entering a narrow entrances.
 
-<p align="center">
-  <img src="https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/ToF_Sensors_VL53L1X_Image.PNG" width="500">
-  <img src="https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/ToF_Sensors_Working.PNG" width="1000">
+<p align="left">
+  <img src="https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/ToF_Sensors_VL53L1X_Image.PNG" width="250"/>
+  <img src="https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/ToF_Sensors_Working.PNG" width="500">
 </p>
+
+  Moreover, we use the Bosch-Hillcrest Lab BNO080 IMU (inertial measurement unit) to stablize linear motion, reduce drift, avoid collisions while turning, and send linear and angular data to our Navigation team counterpart. We use this specific IMU due to its dynamic sensor calibration feature and its precise measurements compared to the previous IMU that we used; BNO055. 
+  
+  <p align="left">
+  <img src="https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/Imu_BNO080_Image.PNG" width="350">
+  <img src="https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/IMU_Degrees_of_Freedom.PNG" width="350"/>
+</p>
+
 
 ## Contact
 **Website:** http://smartwheelchair.eng.ucsd.edu/  
