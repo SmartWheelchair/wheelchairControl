@@ -125,7 +125,7 @@ A wrapper is simply a function that exists to call another function. Meaning we 
 
 In our code ```BNO080.cpp``` and ```BNO080.h``` is the main function and ```BNO080Wheelchair.cpp``` and ```BNO080Wheelchair.h``` is the wrapper function. The wrapper function is about 600 lines shorter than the main function. As stated earlier, this makes it a lot easier to read and to make the necessary adjustments based on the team needs.
 
-Parameters that we are able to receive from the IMU are accelerometer, gyroscope and magnetometers. The main two that we are using are the accelerometer and the gyroscope. We are using gyro_z  which is currAngularVelocity. We then place that variable in a kinematic equation in the wheelchair.cpp file.
+Parameters that we are able to receive from the IMU are accelerometer, gyroscope and magnetometers. The main two that we are using are the accelerometer and the gyroscope. We are using ```gyro_z```  which is ```currAngularVelocity```. We then place that variable in a kinematic equation in the ```wheelchair.cpp``` file.
 
 The ```BNO080Wheelchair::yaw()``` method returns the total yaw. We call the ```gyro_z()``` from the BNO080 and convert it from radians to degrees. We then calculate the total yaw based on the running time.
 
