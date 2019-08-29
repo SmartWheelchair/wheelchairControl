@@ -10,7 +10,7 @@
 We have used a total of 14 Time of Flight sensors for our kit, meant to be placed on strategic points on the wheelchair such that 
 they can serve as obstacle detectors at critical points and stop the wheelchair when higher-level controls fail. Specifically, these
 sensors can notify if the chair will run into an obstacle directly in front of it, directly behind it, and while turning, as well as
-when it is dangerously close to a ledge.
+when the wheelchair is dangerously close to a ledge.
 
 #### 1. Forward & Backward Safety
   
@@ -58,6 +58,8 @@ when it is dangerously close to a ledge.
  The three sensors on the left side of the wheelchair are used for Left Safety, and the remaining three sensors on the right side of the wheelchair are used for Right Safety.
  The reading from the time of flight sensors is combined with the angular velocity, angle, and arclength readings from the encoders to implement Side Safety.
  
+ ///Some description of these variables
+ 
  **Left Safety** is implemented using an if-else statement command, with 5 if/else if cases, apart from the default else case.
   If any of the if/else if cases are triggered, the variable leftSafety is set to 1, which prevents the wheelchair from turning
   left. If none of these cases are triggered, leftSafety is set to 0 by default, which allows the wheelchair to turn left.
@@ -75,6 +77,14 @@ When the blindspot sensor detects an obstacle closer than a fixed distance, left
 For this case to be triggered, two conditions must be met:
 1. The wheelchair detects an obstacle in its path that can potentially obstruct the movement of the wheelchair
 2. The wheelchair is turning with angular velocity just within the range to stop it safely
+
+The first condition is met when the reading from the side-facing time of flight sensor is smaller than the arcLength (plus an offset, which can be determined by testing), which indicates potential obstruction in the wheelchair's turning path.
+
+The second condition is met when the velocity of the wheelchair is determined to be within the range to stop it before it hits the obstacle, as obtained from the following angular kinematics equation:
+
+<img src="https://latex.codecogs.com/gif.latex?2%5Calpha%20%5Cleft%20%28%20%5CDelta%20%5Ctheta%20%5Cright%20%29%20%3D%20%5Comega%20%5E2%20-%20%5Comega%20_0%20%5E2">
+
+where α is the angular acceleration of the wheelchair (which is a fixed negative value, since the chair must decelerate to stop), ω is the final angular velocity (which is 0 for the chair to stop turning), ω0 is the initial angular velocity (which is the angular velocity at which the wheelchair is travelling before it begins to stop turning), and Δθ is the stopping angle.
 
 
 
