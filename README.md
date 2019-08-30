@@ -60,6 +60,15 @@ These are the 3D printed parts that were used to enclose all of the sensors.
   <img src="https://github.com/SmartWheelchair/Systems/blob/master/Wheelchair%203D%20Part%20Images/ToF_Front_Right_Holder.PNG" width="250">
 </p>
 
+
+## Low-Level Implemenation (C/C++) and Workspace IDE
+  
+  To learn more about how we implement the code, please check out the following md files:
+    
+  Low-Level (C/C++): https://github.com/SmartWheelchair/wheelchairControl/blob/master/LOWLEVELREADME.md  
+    
+  Compiling and debugging our code: https://github.com/SmartWheelchair/wheelchairControl/blob/master/codeManagement%26IDE.md  
+
 ## Contact
 **Website:** http://smartwheelchair.eng.ucsd.edu/  
 **Phone:** (619) 836-8052  
