@@ -146,6 +146,27 @@ The emergency stop button can be pressed by users at any time to stop the wheelc
 
 The ```emergencyButton_thread()```, which runs in parallel to the main code, constantly polls to check if the emergency button has been pressed. If it detects the button has been pressed, it immediately sends a system reset command to the microcontroller ```NVIC_SystemReset()```, overriding other tasks. 
 
+### PID controlls
+
+To control the chair we simulate joystick values. To move forward and backward we put pwm values on the 
+
+For Ros-Mbed movement we use PID controls to ensure we are moving at the desired speed and turning at the desired angle.
+
+For a brief introduction to PID controller please look at the following video: https://www.youtube.com/watch?v=UR0hOmjaHp0
+
+There are multiple reasons we use pid controllers. The PID controls we have updated the most are ```pid_twistA``` and ```pid_twistV```. All other pid functions have not been tested in a while.
+
+**PID Forward**
+To move forward in a straight line at a certain speed we are using ```pid_twistV```.
+How it works is we have two PID algorithms running at the same time. One PID controller determines how much the chair should be turning and the other PID controller selects how fast it should be go. 
+To move at a certain speed, we feed in the PID controller the average of encoder values, and it returns how much the chair should speed up or slow down. This is represented by the increase or decrease of the y axis on the joystick control. There is a bit of a delay on the reaction time on the chair, so the max values have to be kept down. These max values we cap are the maximum joystick PWM voltage at “1”, and we cap how much the joystick value can increase per cycle to “.005”.
+
+To ensure there is no sideways drift, we feed in the controller the difference of the encoders, which tells us whether we are moving straight or at an angle. The Controller returns how much the chair should move to the left or to the right.  This is represented by an increase or decrease of the x axis in the joystick controls.
+
+**PID Turn**
+To turn at certain speeds we use ```pid_twistA```. To go at the correct angular velocity, we feed the IMU gyroscope z value to the controller. Then the controller decides whether the angular velocity should increase or decrease. This is done by increasing or decreasing the x axis value of the joystick.
+
+
 ## Contact
 **Website:** http://smartwheelchair.eng.ucsd.edu/  
 **Phone:** (619) 836-8052  
