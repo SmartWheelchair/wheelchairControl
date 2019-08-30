@@ -146,7 +146,7 @@ The emergency stop button can be pressed by users at any time to stop the wheelc
 
 The ```emergencyButton_thread()```, which runs in parallel to the main code, constantly polls to check if the emergency button has been pressed. If it detects the button has been pressed, it immediately sends a system reset command to the microcontroller ```NVIC_SystemReset()```, overriding other tasks. 
 
-### PID controlls
+### PID Controls
 
 To control the chair we simulate joystick values. To move forward and backward we put pwm values on the 
 
