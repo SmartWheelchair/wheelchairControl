@@ -20,11 +20,11 @@
 * Joystick has analog out of 200-700, scale values between 1.3 and 3.3   *
 * Here are some global constants for joystick                            *
 **************************************************************************/
-#define def (2.55f/3.3f)                 // Default axis on joystick to stay neutral; used on x and y axis
-#define high 3.3f/3.3f                  // High power on joystick; used on x and y axis
-#define low (1.7f/3.3f)                 // Low power on joystick; used on x and y axis
-#define offset .018f                     // Joystick adjustment to be able to go straight. Chair dependent on manufactoring precision
-#define process .1                      // Defines default time delay in seconds
+#define def (2.55f/3.3f)           	// Default axis on joystick to stay neutral; used on x and y axis
+#define high 3.3f/3.3f            	// High power on joystick; used on x and y axis
+#define low (1.7f/3.3f)     		// Low power on joystick; used on x and y axis
+#define offset .018f     			// Joystick adjustment to be able to go straight. Chair dependent on manufactoring precision
+#define process .1             		// Defines default time delay in seconds
 
 /*************************************************************************
 *Pin plug-in for Nucleo-L432KC/Compatible with Nucleo-400 series (F767ZI)*
@@ -41,11 +41,12 @@
 /*************************************************************************
 *IMU definitions for turning wheelchair
 **************************************************************************/
-#define WheelchairRadius 80             //distance from IMU to edge of wheelchair(cm)
-#define  maxAngularDeceleration 1.04    //found through testing, max 
+#define WheelchairRadius 95             //distance from IMU to edge of wheelchair(cm)
+#define  maxAngularDeceleration 0.6    //found through testing, max
                                         //acceleration at which chair can 
                                         //stop while turning. In rads per sec
-#define minWallLength 100                // minimum distance from wall to ToF (cm)
+#define minWallLengthLeft 100                // minimum distance from wall to ToF (cm)
+#define minWallLengthRight 200                // minimum distance from wall to ToF (cm)
 /*************************************************************************
 *                                                                        *
 *                         Wheelchair class                               *
@@ -106,7 +107,7 @@ public:
 
     void pid_wall_follower();
 
-    //not being used
+    //Currently not in use (for eclipse IDE)
     void rosCom_thread();
 
     /*************************************************************************
@@ -224,51 +225,52 @@ public:
     bool rightSafety;           //to check if can turn right
     double curr_yaw, curr_velS; // Variable that contains current relative angle
 
-    int* LFF = &ToFV[11];  //Left Front Forward
-    int* LFS = &ToFV[10]; //Left Front Side
-	int* LFA = &ToFV[13];       //Left Front Angle
-	int* LFD = &ToFV[9]; //Left Front Down
+    int* LFF = &ToFV[11];  	//Left Front Forward
+    int* LFS = &ToFV[10]; 	//Left Front Side
+	int* LFA = &ToFV[13];  	//Left Front Angle
+	int* LFD = &ToFV[9]; 	//Left Front Down
 
-	int* RFF = &ToFV[7];  //Right Front Forward
-	int* RFS = &ToFV[8];  //Right Front Side
-	int* RFA = &ToFV[12]; //Right Front Angle
-	int* RFD = &ToFV[6];  //Right Front Down
+	int* RFF = &ToFV[7];  	//Right Front Forward
+	int* RFS = &ToFV[8];  	//Right Front Side
+	int* RFA = &ToFV[12]; 	//Right Front Angle
+	int* RFD = &ToFV[6];  	//Right Front Down
 
-	int* LBB = &ToFV[5];  //Left Back Forward
-	int* LBS = &ToFV[3];  //Left Back Side
-	int* LBD = &ToFV[4];  //Left Back Down
+	int* LBB = &ToFV[5];  	//Left Back Forward
+	int* LBS = &ToFV[3];  	//Left Back Side
+	int* LBD = &ToFV[4];  	//Left Back Down
 
-	int* RBB = &ToFV[0];  //Right Back Forward
-	int* RBS = &ToFV[1];  //Right Back Side
-	int* RBD = &ToFV[2];  //Right Back Down
+	int* RBB = &ToFV[0];  	//Right Back Forward
+	int* RBS = &ToFV[1];  	//Right Back Side
+	int* RBD = &ToFV[2];  	//Right Back Down
 
 
 
 private:
+
     /************************************************************************
      * Expected data used to compare whether of not there is a ledge.       *
      * This serves as a ground base. Array is used for calibrating the      *
      * time of flight sensors, which is used to calculate stdev and mean on * 
      ************************************************************************/
-    int runningAverage[4];           
+    int runningAverage[4];	//Array to store angled ToF reading averages
 
     /* Pointers for the joystick speed */
     PwmOut* x;
     PwmOut* y;
 
-    //Pointers for PCB
+    /* Pointers for PCB */
     PwmOut* on;
     PwmOut* off;
 
-    DigitalIn* e_button;                // Pointer to e_button
+    DigitalIn* e_button;                // Pointer to emergency button
 
-    BNO080Wheelchair* imu;                 // Pointer to IMU
+    BNO080Wheelchair* imu;           	// Pointer to IMU
     Serial* out;                        // Pointer to Serial Monitor
-    Timer* ti;                          // Pointer to the timer
-    QEI* wheel;                         // Pointer to encoder
-    QEI* wheelS;                        // Pointer to encoder
+    Timer* ti;                          // Pointer to timer
+    QEI* wheel;                         // Pointer to left encoder
+    QEI* wheelS;                        // Pointer to right encoder
     VL53L1X** ToF;                      // Arrays of pointers to ToF sensors
-    int ToFV[12];
+    int ToFV[12];						// Array to store ToF readings
 
 };
 #endif
