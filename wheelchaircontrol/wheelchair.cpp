@@ -281,7 +281,7 @@ void Wheelchair::ToFSafe_thread()
      *              			Left Side Safety		                     *
      *************************************************************************/
 
-    //CASE 1 (A)
+    //CASE 1 (A): When standing still
     if((*LFS <= minWallLengthLeft) || (*LBS <= minWallLengthLeft)) {
     	if(y->read() > def) {
     	                y->write(def);
@@ -290,7 +290,7 @@ void Wheelchair::ToFSafe_thread()
     	}
     }
 
-    //CASE 1 (B)
+    //CASE 1 (B): Blind spot, obstacle in the middle side of the wheelchair
     else if((*LFA) <= 100) {
     	if(y->read() > def) {
     	                y->write(def);
@@ -308,15 +308,26 @@ void Wheelchair::ToFSafe_thread()
 //    	}
 //    }
 
-    //CASE 2 (A)
+    //CASE 2 (A):
     else if(/*(currAngularVelocity * currAngularVelocity > 2 *
-        maxAngularDeceleration * angle) && */ ((*LFS)/10 <= arcLength + minWallLengthLeft/10 + 10) || (*LFF) <= 200) {
+        maxAngularDeceleration * angle) && */ fabs(currAngularVelocity) > 0.8 && ((*LFS)/10 <= arcLength + minWallLengthLeft/10 + 80) || (*LFF) <= 230) {
     	if(y->read() > def) {
     	    	                y->write(def);
     	leftSafety = 1; 		//Not safe to turn left
-        out->printf("Too fast to the left!\n");
+        out->printf("CASE 2 FAST FAST LEFT\n");
     	}
     }
+
+    //CASE 3):
+    else if(/*(currAngularVelocity * currAngularVelocity > 2 *
+        maxAngularDeceleration * angle) && */ ((*LFS)/10 <= arcLength + minWallLengthLeft/10 + 13) || (*LFF) <= 230) {
+    	if(y->read() > def) {
+    	    	                y->write(def);
+    	leftSafety = 1; 		//Not safe to turn left
+        out->printf("CASE 3 LEFT\n");
+    	}
+    }
+
 
 
 //    //CASE 2 (B)

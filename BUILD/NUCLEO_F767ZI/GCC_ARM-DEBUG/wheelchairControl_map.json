@@ -1,0 +1,168 @@
+[
+    {
+        "module": "[fill]", 
+        "size": {
+            ".data": 6, 
+            ".bss": 36, 
+            ".text": 271
+        }
+    }, 
+    {
+        "module": "[lib]\\c.a", 
+        "size": {
+            ".data": 2472, 
+            ".bss": 89, 
+            ".text": 27501
+        }
+    }, 
+    {
+        "module": "[lib]\\gcc.a", 
+        "size": {
+            ".data": 0, 
+            ".bss": 0, 
+            ".text": 784
+        }
+    }, 
+    {
+        "module": "[lib]\\m.a", 
+        "size": {
+            ".data": 1, 
+            ".bss": 0, 
+            ".text": 7490
+        }
+    }, 
+    {
+        "module": "[lib]\\misc", 
+        "size": {
+            ".data": 16, 
+            ".bss": 28, 
+            ".text": 252
+        }
+    }, 
+    {
+        "module": "main.o", 
+        "size": {
+            ".data": 64, 
+            ".bss": 7193, 
+            ".text": 4564
+        }
+    }, 
+    {
+        "module": "mbed-os\\drivers", 
+        "size": {
+            ".data": 4, 
+            ".bss": 184, 
+            ".text": 5028
+        }
+    }, 
+    {
+        "module": "mbed-os\\events", 
+        "size": {
+            ".data": 0, 
+            ".bss": 1576, 
+            ".text": 2819
+        }
+    }, 
+    {
+        "module": "mbed-os\\features", 
+        "size": {
+            ".data": 0, 
+            ".bss": 12768, 
+            ".text": 4692
+        }
+    }, 
+    {
+        "module": "mbed-os\\hal", 
+        "size": {
+            ".data": 4, 
+            ".bss": 84, 
+            ".text": 3544
+        }
+    }, 
+    {
+        "module": "mbed-os\\platform", 
+        "size": {
+            ".data": 260, 
+            ".bss": 345, 
+            ".text": 8941
+        }
+    }, 
+    {
+        "module": "mbed-os\\rtos", 
+        "size": {
+            ".data": 168, 
+            ".bss": 6073, 
+            ".text": 24590
+        }
+    }, 
+    {
+        "module": "mbed-os\\targets", 
+        "size": {
+            ".data": 5, 
+            ".bss": 1720, 
+            ".text": 40715
+        }
+    }, 
+    {
+        "module": "test_env.o", 
+        "size": {
+            ".data": 0, 
+            ".bss": 0, 
+            ".text": 26
+        }
+    }, 
+    {
+        "module": "wheelchaircontrol\\BNOWrapper", 
+        "size": {
+            ".data": 0, 
+            ".bss": 4, 
+            ".text": 8094
+        }
+    }, 
+    {
+        "module": "wheelchaircontrol\\PID", 
+        "size": {
+            ".data": 0, 
+            ".bss": 0, 
+            ".text": 1510
+        }
+    }, 
+    {
+        "module": "wheelchaircontrol\\QEI", 
+        "size": {
+            ".data": 0, 
+            ".bss": 0, 
+            ".text": 1398
+        }
+    }, 
+    {
+        "module": "wheelchaircontrol\\Statistics", 
+        "size": {
+            ".data": 0, 
+            ".bss": 0, 
+            ".text": 480
+        }
+    }, 
+    {
+        "module": "wheelchaircontrol\\VL53L1X_Filter", 
+        "size": {
+            ".data": 0, 
+            ".bss": 0, 
+            ".text": 4135
+        }
+    }, 
+    {
+        "module": "wheelchaircontrol\\wheelchair.o", 
+        "size": {
+            ".data": 28, 
+            ".bss": 3632, 
+            ".text": 8501
+        }
+    }, 
+    {
+        "summary": {
+            "static_ram": 36760, 
+            "total_flash": 158363
+        }
+    }
+]

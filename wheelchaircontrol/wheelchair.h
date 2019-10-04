@@ -42,7 +42,7 @@
 *IMU definitions for turning wheelchair
 **************************************************************************/
 #define WheelchairRadius 95             //distance from IMU to edge of wheelchair(cm)
-#define  maxAngularDeceleration 0.6    //found through testing, max
+#define  maxAngularDeceleration 0.5    //found through testing, max
                                         //acceleration at which chair can 
                                         //stop while turning. In rads per sec
 #define minWallLengthLeft 100                // minimum distance from wall to ToF (cm)
