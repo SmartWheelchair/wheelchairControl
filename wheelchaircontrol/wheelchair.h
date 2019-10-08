@@ -46,7 +46,7 @@
                                         //acceleration at which chair can 
                                         //stop while turning. In rads per sec
 #define minWallLengthLeft 100                // minimum distance from wall to ToF (cm)
-#define minWallLengthRight 200                // minimum distance from wall to ToF (cm)
+#define minWallLengthRight 100                // minimum distance from wall to ToF (cm)
 /*************************************************************************
 *                                                                        *
 *                         Wheelchair class                               *
