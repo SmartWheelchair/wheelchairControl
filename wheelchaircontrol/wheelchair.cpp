@@ -281,6 +281,10 @@ void Wheelchair::ToFSafe_thread()
      *              			Left Side Safety		                     *
      *************************************************************************/
 
+    //out -> printf("x read: %f ,     y read: %f \n", x->read(), y ->read());
+
+    //out -> printf("LFS: %d \n arcLength: %f \n minWallLengthLeft %d \n currAngularVelocity %f \n", *LFS, arcLength, minWallLengthLeft, currAngularVelocity);
+
     //CASE 1 (A): When standing still
     if((*LFS <= minWallLengthLeft) || (*LBS <= minWallLengthLeft)) {
     	if(y->read() > def) {
@@ -362,7 +366,8 @@ void Wheelchair::ToFSafe_thread()
     //CASE 1 (A)
 
 
-    out -> printf("RFS: %d \n arcLength: %f \n minWallLengthRight %f \n currAngularVelocity %f \n", *RFS, arcLength, minWallLengthRight, currAngularVelocity);
+    //out -> printf("RFS: %d \n arcLength: %f \n minWallLengthRight %d \n currAngularVelocity %f \n", *RFS, arcLength, minWallLengthRight, currAngularVelocity);
+    //out -> printf("RFF: %d \n", *RFF);
 
     if((*RFS <= minWallLengthRight) || (*RBS <= minWallLengthRight)) {
     	if(y->read() < def) {
@@ -373,32 +378,33 @@ void Wheelchair::ToFSafe_thread()
         }
 
     //CASE 1 (B)
-    else if((*RFA) <= 100) {	//Number needs to be changed based on testing
+    else if((*RFA) <= 100) {	//Number` needs to be changed based on testing
     	if(y->read() < def) {
-    	y->write(def);
-    	rightSafety = 1;
-        out->printf("Blindspot on the right side\n");
+    		y->write(def);
+    		rightSafety = 1;
+			out->printf("Blindspot on the right side\n");
     	}
     }
 
     //CASE 2 (B)
-    else if(/*(currAngularVelocity * currAngularVelocity > 2 *
-        maxAngularDeceleration * angle) && */ currAngularVelocity > 0.8 && ((*RFS)/10 <= arcLength + minWallLengthRight/10 + 80) || (*RFF) <= 230) {
-    	if(y->read() > def) {
-    	    	                y->write(def);
-    	rightSafety = 1; 		//Not safe to turn right
-        out->printf("CASE 2 FAST FAST RIGHT\n");
-    	}
-    }
+    // else if(/*(currAngularVelocity * currAngularVelocity > 2 *
+    //     maxAngularDeceleration * angle) && */ (currAngularVelocity < -0.8 && ((*RFS)/10 <= arcLength + minWallLengthRight/10 + 80)) || (*RFF) <= 230) {
+    // 	if(y->read() > def) {
+    // 		y->write(def);
+    // 		rightSafety = 1; 		//Not safe to turn right
+    //    	    out->printf("CASE 2 FAST FAST RIGHT\n");
+    // 	}
+    // }
 
     //CASE 3):
-    else if(/*(currAngularVelocity * currAngularVelocity > 2 *
-        maxAngularDeceleration * angle) && */ ((*RFS)/10 <= arcLength + minWallLengthRight/10 + 13) || (*RFF) <= 230) {
-    	if(y->read() > def) {
-    	    	                y->write(def);
-    	rightSafety = 1; 		//Not safe to turn RIGHT
-        out->printf("CASE 3 RIGHT\n");
+    else if( ( (*RFS)/10 <= arcLength + minWallLengthRight/10 + 13 ) || (*RFF) <= 230) {
+    	if(y->read() < def) {
+    		y->write(def);
+    		out->printf("CASE 3 SHOULD BE HERERERERERRERERER RIGHT\n");
+    		rightSafety = 1; 		//Not safe to turn RIGHT
+        	
     	}
+    	out->printf("CASE 3 RIGHT\n");
     }
 
     // //CASE 2 (A)
