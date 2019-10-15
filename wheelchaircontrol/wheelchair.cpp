@@ -373,7 +373,7 @@ void Wheelchair::ToFSafe_thread()
     	if(y->read() < def) {
     	y->write(def);
     	rightSafety = 1;
-            out->printf("Detecting wall to the right!\n");
+            out->printf("CASE 1(A): Detecting wall to the right!\n");
     	}
         }
 
@@ -382,25 +382,15 @@ void Wheelchair::ToFSafe_thread()
     	if(y->read() < def) {
     		y->write(def);
     		rightSafety = 1;
-			out->printf("Blindspot on the right side\n");
+			out->printf("CASE 1(B): Blindspot on the right side\n");
     	}
     }
-
-    //CASE 2 (B)
-    // else if(/*(currAngularVelocity * currAngularVelocity > 2 *
-    //     maxAngularDeceleration * angle) && */ (currAngularVelocity < -0.8 && ((*RFS)/10 <= arcLength + minWallLengthRight/10 + 80)) || (*RFF) <= 230) {
-    // 	if(y->read() > def) {
-    // 		y->write(def);
-    // 		rightSafety = 1; 		//Not safe to turn right
-    //    	    out->printf("CASE 2 FAST FAST RIGHT\n");
-    // 	}
-    // }
 
     //CASE 3):
     else if( ( (*RFS)/10 <= arcLength + minWallLengthRight/10 + 13 ) || (*RFF) <= 230) {
     	if(y->read() < def) {
     		y->write(def);
-    		out->printf("CASE 3 SHOULD BE HERERERERERRERERER RIGHT\n");
+    		out->printf("CASE 2\n");
     		rightSafety = 1; 		//Not safe to turn RIGHT
         	
     	}
