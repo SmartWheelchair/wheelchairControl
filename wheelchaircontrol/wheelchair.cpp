@@ -58,7 +58,6 @@ void Wheelchair::compass_thread()
 {
     curr_yaw = imu->yaw();
     z_angular = curr_yaw;
-    //out->printf("%f\r\n", curr_yaw);
 }
 
 /*************************************************************************
@@ -238,11 +237,11 @@ void Wheelchair::ToFSafe_thread()
    // CASE 2
    else if(-curr_vel > 0.5 && -curr_vel < 0.9 &&((2 * maxDecelerationFast*(*LBB) < curr_vel*curr_vel*1000*1000 ||
                                  2 * maxDecelerationFast*(*RBB) < curr_vel*curr_vel*1000*1000) &&
-                                (*LBB < 1300 || *RBB < 1300)) /*|| 550 > *LFF || 550 > *RFF */) {
+                                (*LBB < 1300 || *RBB < 1300))) {
             if(x->read() < def) {
                 x->write(def);
                 backwardSafety = 1;     	// You cannot move backwards
-                out->printf("Enabled Backward Safety, Case 2\n");
+                out->printf("Enabled Backward Safety, Case 2 (MEDIUM SPEED)\n");
             }
         }
 
@@ -251,7 +250,7 @@ void Wheelchair::ToFSafe_thread()
                if(x->read() < def) {
                    x->write(def);
                    backwardSafety = 1;   	// You cannot move backwards
-                   out->printf("Enabled Backward Safety, Case 3\n");
+                   out->printf("Enabled Backward Safety, Case 3 (HIGH SPEED)\n");
                }
            }
 
@@ -275,8 +274,6 @@ void Wheelchair::ToFSafe_thread()
     //out->printf("LFS = %d\t LBS = %d\t LFA = %d\n", *LFS, *LBS, *LFA);
     //out->printf("RFS = %d\t RBS = %d\t RFA = %d\n", *RFS, *RBS, *RFA);
 
-//    out->printf("LFS = %f\t LBS = %f\t LFA = %f\n", *LFS, *LBS, *LFA);
-//    out->printf("RFS = %f\t RBS = %f\t RFA = %f\n", *RFS, *RBS, *RFA);
     /*************************************************************************
      *              			Left Side Safety		                     *
      *************************************************************************/
