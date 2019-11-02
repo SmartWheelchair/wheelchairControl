@@ -126,6 +126,15 @@ public:
     ************************************************************************ */
     void emergencyButton_thread();
 
+    //---------------------------------------
+    void imuRead_thread();
+    void forwardSafety_thread();
+    void rightSideSafety_thread();
+    void leftSideSafety_thread();
+    void backwardSafety_thread();
+    void ledgeSafety_thread();
+    //--------------------------------------
+
     /*************************************************************************
     *   This method gets the encoder values and calculates the distance since*
     *   the last encoder reset.                                              *
@@ -243,6 +252,10 @@ public:
 	int* RBS = &ToFV[1];  	//Right Back Side
 	int* RBD = &ToFV[2];  	//Right Back Down
 
+    double currAngularVelocity;
+    double angle;
+    double arcLength;
+
 
 
 private:
@@ -270,7 +283,7 @@ private:
     QEI* wheel;                         // Pointer to left encoder
     QEI* wheelS;                        // Pointer to right encoder
     VL53L1X** ToF;                      // Arrays of pointers to ToF sensors
-    int ToFV[12];						// Array to store ToF readings
+    int ToFV[12] = {0,0,0,0,0,0,0,0,0,0,0,0};						// Array to store ToF readings, iitialize to 0
 
 };
 #endif
