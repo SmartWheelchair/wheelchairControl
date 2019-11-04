@@ -220,12 +220,13 @@ void Wheelchair::leftSideSafety_thread() {
 
 	ToFV[10] = (*(ToF + 10))->readFromOneSensor(); //LFS
 	ToFV[3] = (*(ToF + 3))->readFromOneSensor(); //LBS
+	ToFV[13] = (*(ToF + 13))->readFromOneSensor(); //LFA
 
 	if ((*LFS <= minWallLengthLeft) || (*LBS <= minWallLengthLeft)) {
 		if (y->read() > def) {
 			y->write(def);
 			leftSafety = 1;			//Not safe to turn left
-			out->printf("Detecting wall to the left!\n");
+			//out->printf("Detecting wall to the left!\n");
 		}
 	}
 
@@ -234,7 +235,7 @@ void Wheelchair::leftSideSafety_thread() {
 		if (y->read() > def) {
 			y->write(def);
 			leftSafety = 1;			//Not safe to turn left
-			out->printf("Blindspot on the left side\n");
+			//out->printf("Blindspot on the left side\n");
 		}
 	}
 
@@ -253,7 +254,7 @@ void Wheelchair::leftSideSafety_thread() {
 		if (y->read() > def) {
 			y->write(def);
 			leftSafety = 1; 		//Not safe to turn left
-			out->printf("CASE 2 FAST FAST LEFT\n");
+			//out->printf("CASE 2 FAST FAST LEFT\n");
 		}
 	}
 
@@ -263,7 +264,7 @@ void Wheelchair::leftSideSafety_thread() {
 		if (y->read() > def) {
 			y->write(def);
 			leftSafety = 1; 		//Not safe to turn left
-			out->printf("CASE 3 LEFT\n");
+			//out->printf("CASE 3 LEFT\n");
 		}
 	}
 
@@ -315,7 +316,7 @@ void Wheelchair::rightSideSafety_thread() {
 	ToFV[1] = (*(ToF + 1))->readFromOneSensor(); //RBS
 	ToFV[12] = (*(ToF + 12))->readFromOneSensor(); //RFA
 
-	out -> printf("RFS: %d, RBS %d, RFA %d \n", *RFS, *RBS, *RFA);
+	out -> printf("LFS: %d, LFF %d, LFA %d, LFD %d\n", *LFS, *LFF, *LFA, *LFD);
 
 	if ((*RFS <= minWallLengthRight) || (*RBS <= minWallLengthRight)) {
 		if (y->read() < def) {
@@ -383,8 +384,12 @@ void Wheelchair::rightSideSafety_thread() {
 
 
 void Wheelchair::ledgeSafety_thread() {
+	
 
-
+	ToFV[9] = (*(ToF + 9))->readFromOneSensor(); //LFD
+	ToFV[6] = (*(ToF + 6))->readFromOneSensor(); //RFD
+	ToFV[4] = (*(ToF + 4))->readFromOneSensor(); //LBD
+	ToFV[2] = (*(ToF + 2))->readFromOneSensor(); //RBD
 	/*************************************************************************
    *           Ledge Detection for the Back Time of Flight Sensors         *
    *************************************************************************/
@@ -395,8 +400,8 @@ void Wheelchair::ledgeSafety_thread() {
 		k2 = 0;
 	}
 
-	ledgeArrayLB[k2] = (*(ToF + 4))->readFromOneSensor();
-	ledgeArrayRB[k2] = (*(ToF + 2))->readFromOneSensor();
+	ledgeArrayLB[k2] = ToFV[4];
+	ledgeArrayRB[k2] = ToFV[2];
 
 	outlierToF[2] = LBTStats.mean() + 2 * LBTStats.stdev();
 	outlierToF[3] = RBTStats.mean() + 2 * RBTStats.stdev();
@@ -416,8 +421,8 @@ void Wheelchair::ledgeSafety_thread() {
 	 *         Ledge Detection for the front Time of Flight Sensors           *
 	 **************************************************************************/
 
-	ledgeArrayLF[k1] = (*(ToF + 10))->readFromOneSensor();
-	ledgeArrayRF[k1] = (*(ToF + 8))->readFromOneSensor();
+	ledgeArrayLF[k1] = ToFV[9];
+	ledgeArrayRF[k1] = ToFV[6];
 
 	outlierToF[0] = LFDStats.mean() + 2 * LFDStats.stdev();
 	outlierToF[1] = RFDStats.mean() + 2 * RFDStats.stdev();
