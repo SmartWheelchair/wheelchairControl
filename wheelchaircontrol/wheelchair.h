@@ -36,6 +36,7 @@
 #define Diameter 31.75                  // Diameter of encoder wheel
 #define maxDecelerationSlow 130
 #define maxDecelerationFast 80
+#define linDecelBase 0.3 //meters per second
 #define ToFSensorNum 12
 
 /*************************************************************************
@@ -110,14 +111,6 @@ public:
     //Currently not in use (for eclipse IDE)
     void rosCom_thread();
 
-    /*************************************************************************
-    *   This method is a thread that iterates through all the sensor's       *
-    *   values and determines whether or not the wheelchair is about to hit  *
-    *   or crash into something. If the sensors detect something close to    *
-    *   the chair, then the chair will safely halt and allow movement in the *
-    *   direction opposed to where an object is detected.                    *
-    ************************************************************************ */
-    void ToFSafe_thread();
 
     /*************************************************************************
     *   This method is a thread that will constantly be checking the value   *

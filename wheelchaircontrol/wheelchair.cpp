@@ -103,45 +103,18 @@ void Wheelchair::forwardSafety_thread() {
 
 	ToFV[7] = (*(ToF + 7))->readFromOneSensor();      //RFF
 	ToFV[11] = (*(ToF + 11))->readFromOneSensor();  //LFF
+	double linDecel = linDecelBase + (curr_vel * 1);
+	double stoppingDistance = 300 + 1000*(curr_vel * curr_vel)/(2*linDecelBase); //stopping distance, in milimeters
+	//out -> printf("curr_vel: %f, stoppingDistance: %f ", curr_vel, stoppingDistance);
+	//out -> printf("LFS: %d, LFF %d, LFA %d, LFD %d\n", *LFS, *LFF, *LFA, *LFD);
 
-	 //CASE 1(A)
-	if (curr_vel < 0.5 && ((2 * maxDecelerationSlow * (*LFF) < curr_vel * curr_vel * 1000 * 1000 ||
-		2 * maxDecelerationSlow * (*RFF) < curr_vel * curr_vel * 1000 * 1000) &&
-		(*LFF < 800 || *RFF < 800))) {
 
+	//CASE 1 - Calculate using formula
+	if (*LFF < stoppingDistance || *RFF < stoppingDistance) {
 		if (x->read() > def) {
 			x->write(def);
 			forwardSafety = 1;      		// You cannot move forward
-			out->printf("Enabled Forward Safety, Case 1 - A (FORMULA)\n");
-		}
-	}
-
-	// CASE 1(B)
-	else if (550 > * LFF || 550 > * RFF) {
-		if (x->read() > def) {
-			x->write(def);
-			forwardSafety = 1;        		// You cannot move forward
-			out->printf("Enabled Forward Safety, Case 1 - B (DISTANCE)\n");
-		}
-	}
-
-	// CASE 2
-	else if (curr_vel > 0.5 && curr_vel < 0.9 && ((2 * maxDecelerationFast * (*LFF) < curr_vel * curr_vel * 1000 * 1000 ||
-		2 * maxDecelerationFast * (*RFF) < curr_vel * curr_vel * 1000 * 1000) &&
-		(*LFF < 1300 || *RFF < 1300)) /*|| 550 > *LFF || 550 > *RFF */) {
-		if (x->read() > def) {
-			x->write(def);
-			forwardSafety = 1;       	// You cannot move forward
-			out->printf("Enabled Forward Safety, Case 2\n");
-		}
-	}
-
-	// CASE 3
-	else if ((curr_vel > 0.9) && (*LFF < 1700 || *RFF < 1700)) {
-		if (x->read() > def) {
-			x->write(def);
-			forwardSafety = 1;   	// You cannot move forward
-			out->printf("Enabled Forward Safety, Case 3\n");
+			out->printf("Enabled forward Safety, Case 1- Stopped due to formula \n");
 		}
 	}
 
@@ -161,49 +134,19 @@ void Wheelchair::backwardSafety_thread() {
 	ToFV[5] = (*(ToF + 5))->readFromOneSensor();  //LBB
 	ToFV[0] = (*(ToF + 0))->readFromOneSensor();  //RBB
 
-	if (-curr_vel < 0.5 && ((2 * maxDecelerationSlow * (*LBB) < curr_vel * curr_vel * 1000 * 1000 ||
-		2 * maxDecelerationSlow * (*RBB) < curr_vel * curr_vel * 1000 * 1000) &&
-		(*LBB < 800 || *RBB < 800))) {
+    double linDecel = linDecelBase + (curr_vel * 1);
+	double stoppingDistance = 100 + 1000*(curr_vel * curr_vel)/(2*linDecelBase); //stopping distance, in milimeters
 
+	if (*LBB < stoppingDistance || *RBB < stoppingDistance) {
 		if (x->read() < def) {
 			x->write(def);
-			backwardSafety = 1;          	// You cannot move backwards
-			out->printf("Enabled Backward Safety, Case 1 - A (FORMULA)\n");
-		}
-	}
-
-	// CASE 1 (B)
-	else if (550 > * LBB || 550 > * RBB) {
-		if (x->read() < def) {
-			x->write(def);
-			backwardSafety = 1;         		// You cannot move backwards
-			out->printf("Enabled Backward Safety, Case 1 - B (DISTANCE)\n");
-		}
-	}
-
-	// CASE 2
-	else if (-curr_vel > 0.5 && -curr_vel < 0.9 && ((2 * maxDecelerationFast * (*LBB) < curr_vel * curr_vel * 1000 * 1000 ||
-		2 * maxDecelerationFast * (*RBB) < curr_vel * curr_vel * 1000 * 1000) &&
-		(*LBB < 1300 || *RBB < 1300))) {
-		if (x->read() < def) {
-			x->write(def);
-			backwardSafety = 1;     	// You cannot move backwards
-			out->printf("Enabled Backward Safety, Case 2 (MEDIUM SPEED)\n");
-		}
-	}
-
-	// CASE 3
-	else if ((-curr_vel > 0.9) && (*LBB < 1700 || *RBB < 1700)) {
-		if (x->read() < def) {
-			x->write(def);
-			backwardSafety = 1;   	// You cannot move backwards
-			out->printf("Enabled Backward Safety, Case 3 (HIGH SPEED)\n");
+			backwardSafety = 1;      		// You cannot move forward
+			out->printf("Enabled backward Safety, Case 1- Stopped due to formula \n");
 		}
 	}
 
 	else
 		backwardSafety = 0;
-
 }
 
 void Wheelchair::leftSideSafety_thread() {
@@ -316,13 +259,13 @@ void Wheelchair::rightSideSafety_thread() {
 	ToFV[1] = (*(ToF + 1))->readFromOneSensor(); //RBS
 	ToFV[12] = (*(ToF + 12))->readFromOneSensor(); //RFA
 
-	out -> printf("LFS: %d, LFF %d, LFA %d, LFD %d\n", *LFS, *LFF, *LFA, *LFD);
+	//out -> printf("LFS: %d, LFF %d, LFA %d, LFD %d\n", *LFS, *LFF, *LFA, *LFD);
 
 	if ((*RFS <= minWallLengthRight) || (*RBS <= minWallLengthRight)) {
 		if (y->read() < def) {
 			y->write(def);
 			rightSafety = 1;
-			out->printf("CASE 1(A): Detecting wall to the right!\n");
+			//out->printf("CASE 1(A): Detecting wall to the right!\n");
 		}
 	}
 
@@ -331,8 +274,8 @@ void Wheelchair::rightSideSafety_thread() {
 		if (y->read() < def) {
 			y->write(def);
 			rightSafety = 1;
-			out->printf("RFA: %d\n", *RFA);
-			out->printf("CASE 1(B): Blindspot on the right side\n");
+			//out->printf("RFA: %d\n", *RFA);
+			//out->printf("CASE 1(B): Blindspot on the right side\n");
 		}
 	}
 
@@ -340,11 +283,11 @@ void Wheelchair::rightSideSafety_thread() {
 	else if (((*RFS) / 10 <= arcLength + minWallLengthRight / 10 + 13) || (*RFF) <= 230) {
 		if (y->read() < def) {
 			y->write(def);
-			out->printf("CASE 2\n");
+			//out->printf("CASE 2\n");
 			rightSafety = 1; 		//Not safe to turn RIGHT
 
 		}
-		out->printf("CASE 3 RIGHT\n");
+		//out->printf("CASE 3 RIGHT\n");
 	}
 
 	// //CASE 2 (A)
@@ -384,7 +327,7 @@ void Wheelchair::rightSideSafety_thread() {
 
 
 void Wheelchair::ledgeSafety_thread() {
-	
+
 
 	ToFV[9] = (*(ToF + 9))->readFromOneSensor(); //LFD
 	ToFV[6] = (*(ToF + 6))->readFromOneSensor(); //RFD
@@ -429,39 +372,6 @@ void Wheelchair::ledgeSafety_thread() {
 
 	runningAverage[0] = ((runningAverage[0] * (4) + *LFD) / 5);
 	runningAverage[1] = ((runningAverage[1] * (4) + *RFD) / 5);
-}
-
-
-/*************************************************************************
-*      Thread checks ToF sensors for safety of wheelchair movement       *
-**************************************************************************/
-void Wheelchair::ToFSafe_thread()
-{
-	//out -> printf("I RAM SAFTEY\n");
-
-	//out->printf("%d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\n", *RBB, *RBS, *RBD, *LBS, *LBD, *LBB, *RFS, *RFF, *RFD, *LFF, *LFD, *LFS, *LFA, *RFA);
-	//out->printf("\n");
-	//out->printf("Encoder 2 TEST = %f\n", wheel->getDistance(53.975));
-	//out->printf("Encoder 1 TEST = %f\n", wheelS->getDistance(53.975));
-
-	/**************************************************************************
-	 *                      ToF ARRAY ASSIGNMENTS
-	 *           (from the perspective of user seated on wheelchair)
-	 *
-	 *   Each ToF has a 3 letter name, the first indicates left/right, the
-	 *   second front/back, and third, the specific ToF sensor
-	 *   L = Left, R = Right
-	 *   F = Front, B = Back
-	 *   D = Down, F = Forward, Side = S
-	 *   eg: (*LBB) means Left side, Back end, Bottom ToF
-	 *
-	 *   FRONT - LEFT
-	 *   ToF 10	- Down (Angle)		LFD
-	 *   ToF 9	- Bottom (Front)	LFF
-	 *   ToF 11	- Side				LFS */
-
-
-
 }
 
 /*************************************************************************

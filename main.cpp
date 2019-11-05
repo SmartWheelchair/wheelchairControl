@@ -131,9 +131,8 @@ VL53L1X** ToFT = ToF;
  **************************************************************************/
 Timer t, IMU_t;                                                 // Initialize time object t and IMU timer
 EventQueue queue;                                               // Class to organize threads
-Thread compass;                                                 // Thread for compass
+//Thread compass;                                                 // Thread for compass
 Thread velocity;                                                // Thread for velocity
-Thread ToFSafe;                                                 // Thread for safety stuff
 
 //----------------------------------------
 Thread imuRead;
@@ -161,9 +160,8 @@ int main(void)
     
 	pc.printf("Before Starting\r\n");
     
-    queue.call_every(20, &smart, &Wheelchair::compass_thread);        // Sets up sampling frequency of the compass thread
+    //queue.call_every(20, &smart, &Wheelchair::compass_thread);        // Sets up sampling frequency of the compass thread
     queue.call_every(SAMPLEFREQ, &smart, &Wheelchair::velocity_thread);         // Sets up sampling frequency of the velocity thread
-    queue.call_every(SAMPLEFREQ, &smart, &Wheelchair::ToFSafe_thread);          // Sets up sampling frequency of the ToF safety thread
 
     //----------------------------------------------------------------
     queue.call_every(SAMPLEFREQ, &smart, &Wheelchair::imuRead_thread);
@@ -178,9 +176,8 @@ int main(void)
     queue.call_every(SAMPLEFREQ, &smart, &Wheelchair::emergencyButton_thread);  // Sets up sampling frequency of the emergency button thread
     
     t.reset();
-    compass.start(callback(&queue, &EventQueue::dispatch_forever));           // Starts running the compass thread
+    //compass.start(callback(&queue, &EventQueue::dispatch_forever));           // Starts running the compass thread
     velocity.start(callback(&queue, &EventQueue::dispatch_forever));            // Starts running the velocity thread
-    ToFSafe.start(callback(&queue, &EventQueue::dispatch_forever)); 
 
     //-------------------------------------------------------------
     imuRead.start(callback(&queue, &EventQueue::dispatch_forever));    
