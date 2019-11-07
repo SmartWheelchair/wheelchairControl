@@ -94,6 +94,18 @@ void Wheelchair::emergencyButton_thread()
 
 }
 
+void Wheelchair::accel_timing() {
+
+}
+
+void Wheelchair::stopChairForward() {
+	if (x->read() > def) {
+		x->write(def);
+		forwardSafety = 1;      		// You cannot move forward
+		out->printf("Enabled forward Safety, Case 1- Stopped due to formula \n");
+	}
+}
+
 
 void Wheelchair::forwardSafety_thread() {
 	//out -> printf("HI forwardSafety is RUNNING\n");
@@ -104,27 +116,30 @@ void Wheelchair::forwardSafety_thread() {
 	ToFV[7] = (*(ToF + 7))->readFromOneSensor();      //RFF
 	ToFV[11] = (*(ToF + 11))->readFromOneSensor();  //LFF
 	double linDecel = linDecelBase + (curr_vel * 1);
-	double stoppingDistance = 300 + 1000*(curr_vel * curr_vel)/(2*linDecelBase); //stopping distance, in milimeters
+	double stoppingDistance = 450 + 1000 * (curr_vel * curr_vel) / (2 * linDecelBase); //stopping distance, in milimeters
 	//out -> printf("curr_vel: %f, stoppingDistance: %f ", curr_vel, stoppingDistance);
 	//out -> printf("LFS: %d, LFF %d, LFA %d, LFD %d\n", *LFS, *LFF, *LFA, *LFD);
 
 
 	//CASE 1 - Calculate using formula
 	if (*LFF < stoppingDistance || *RFF < stoppingDistance) {
-		if (x->read() > def) {
-			x->write(def);
-			forwardSafety = 1;      		// You cannot move forward
-			out->printf("Enabled forward Safety, Case 1- Stopped due to formula \n");
-		}
+		stopChairForward();
+		//out->printf("RFF: %d, LFF %d, curr_vel: %f, stoppingDistance, %f \n", *RFF, *LFF, curr_vel, stoppingDistance);
 	}
 
 	else
 		forwardSafety = 0;
 }
 
+void Wheelchair::stopChairBackward() {
+	if (x->read() < def) {
+		x->write(def);
+		backwardSafety = 1;      		// You cannot move forward
+	}
+}
+
 void Wheelchair::backwardSafety_thread() {
 	//out -> printf("HI backwardSafety is RUNNING\n");
-
 	/*************************************************************************
 	 *           				Backward Safety						         *
 	 *************************************************************************/
@@ -134,19 +149,25 @@ void Wheelchair::backwardSafety_thread() {
 	ToFV[5] = (*(ToF + 5))->readFromOneSensor();  //LBB
 	ToFV[0] = (*(ToF + 0))->readFromOneSensor();  //RBB
 
-    double linDecel = linDecelBase + (curr_vel * 1);
-	double stoppingDistance = 100 + 1000*(curr_vel * curr_vel)/(2*linDecelBase); //stopping distance, in milimeters
+	double linDecel = linDecelBase + (curr_vel * 1);
+	double stoppingDistance = 150 + 1000 * (curr_vel * curr_vel) / (2 * linDecelBase); //stopping distance, in milimeters
 
 	if (*LBB < stoppingDistance || *RBB < stoppingDistance) {
-		if (x->read() < def) {
-			x->write(def);
-			backwardSafety = 1;      		// You cannot move forward
-			out->printf("Enabled backward Safety, Case 1- Stopped due to formula \n");
-		}
+		stopChairBackward();
+		//out->printf("Enabled backward Safety, Case 1- Stopped due to formula \n");
 	}
 
 	else
 		backwardSafety = 0;
+}
+
+void Wheelchair::stopChairLeft() {
+	if (y->read() > def) {
+		y->write(def);
+		leftSafety = 1;			//Not safe to turn left
+			//out->printf("Detecting wall to the left!\n");
+		out->printf("currAngularVelocity %f\n", currAngularVelocity);
+	}
 }
 
 void Wheelchair::leftSideSafety_thread() {
@@ -154,97 +175,73 @@ void Wheelchair::leftSideSafety_thread() {
 	/*************************************************************************
 	 *              			Left Side Safety		                     *
 	 *************************************************************************/
-
-	 //out -> printf("x read: %f ,     y read: %f \n", x->read(), y ->read());
-
 	 //out -> printf("LFS: %d \n arcLength: %f \n minWallLengthLeft %d \n currAngularVelocity %f \n", *LFS, arcLength, minWallLengthLeft, currAngularVelocity);
 
 	 //CASE 1 (A): When standing still
 
 	ToFV[10] = (*(ToF + 10))->readFromOneSensor(); //LFS
 	ToFV[3] = (*(ToF + 3))->readFromOneSensor(); //LBS
-	ToFV[13] = (*(ToF + 13))->readFromOneSensor(); //LFA
 
-	if ((*LFS <= minWallLengthLeft) || (*LBS <= minWallLengthLeft)) {
-		if (y->read() > def) {
-			y->write(def);
-			leftSafety = 1;			//Not safe to turn left
-			//out->printf("Detecting wall to the left!\n");
-		}
+	if (*LFS <= minWallLengthLeft) {
+		//out -> printf("TOO CLOSE SAFETY");
+		stopChairLeft();
 	}
 
-	//CASE 1 (B): Blind spot, obstacle in the middle side of the wheelchair
-	else if ((*LFA) <= 100) {
-		if (y->read() > def) {
-			y->write(def);
-			leftSafety = 1;			//Not safe to turn left
-			//out->printf("Blindspot on the left side\n");
-		}
+	//speed 1
+	else if (currAngularVelocity >= 0.3 && currAngularVelocity < 0.6 && *LFS <= 250) {
+		out->printf("SPEED 1 SAFETY: LFS -> %d\n", *LFS);
+		stopChairLeft();
 	}
 
-	//    //CASE EXTRA
-	//    else if((*LFF) <= 200) {
-	//    	if(y->read() > def) {
-	//    	                y->write(def);
-	//    	leftSafety = 1;			//Not safe to turn left
-	//        out->printf("Footrest probs\n");
-	//    	}
-	//    }
-
-		//CASE 2 (A):
-	else if (/*(currAngularVelocity * currAngularVelocity > 2 *
-		maxAngularDeceleration * angle) && */ fabs(currAngularVelocity) > 0.8 && ((*LFS) / 10 <= arcLength + minWallLengthLeft / 10 + 80) || (*LFF) <= 230) {
-		if (y->read() > def) {
-			y->write(def);
-			leftSafety = 1; 		//Not safe to turn left
-			//out->printf("CASE 2 FAST FAST LEFT\n");
-		}
+	//speed 2
+	else if (currAngularVelocity >= 0.6 && currAngularVelocity < 0.82 && *LFS <= 350) {
+		out->printf("SPEED 2 SAFETY: LFS -> %d\n", *LFS);
+		stopChairLeft();
 	}
 
-	//CASE 3):
-	else if (/*(currAngularVelocity * currAngularVelocity > 2 *
-		maxAngularDeceleration * angle) && */ ((*LFS) / 10 <= arcLength + minWallLengthLeft / 10 + 13) || (*LFF) <= 230) {
-		if (y->read() > def) {
-			y->write(def);
-			leftSafety = 1; 		//Not safe to turn left
-			//out->printf("CASE 3 LEFT\n");
-		}
+	//speed 3
+	else if (currAngularVelocity >= 0.82 && currAngularVelocity < 1.05 && *LFS <= 450) {
+		out->printf("SPEED 3 SAFETY: LFS -> %d\n", *LFS);
+		stopChairLeft();
 	}
 
+	//speed 4
+	else if (currAngularVelocity >= 1.05 && currAngularVelocity < 1.25 && *LFS <= 550) {
+		out->printf("SPEED 4 SAFETY: LFS -> %d\n", *LFS);
+		stopChairLeft();
+	}
 
+	//speed 5
+	else if (currAngularVelocity >= 1.25 && *LFS <= 650) {
+		out->printf("SPEED 5 SAFETY: LFS -> %d\n", *LFS);
+		stopChairLeft();
+	}
 
-	//    //CASE 2 (B)
-	//    else if(/*(currAngularVelocity * currAngularVelocity > 2 *
-	//        maxAngularDeceleration * angle) && */((*LBS)/10 <= arcLength + minWallLengthLeft/10)) {
-	//    	if(y->read() > def) {
-	//    	    	                y->write(def);
-	//    	leftSafety = 1; 		//Not safe to turn left
-	//        out-> printf("Too fast to the left! Back left area danger \n");
-	//    	}
-	//    }
-
-	//    //CASE 2 (C)
-	//    else if(/*(currAngularVelocity * currAngularVelocity > 2 *
-	//        maxAngularDeceleration * angle) && */ ((*LFA)/10 <= arcLength + minWallLengthLeft/10)) {
-	//    	if(y->read() > def) {
-	//    	    	                y->write(def);
-	//    	leftSafety = 1; 		//Not safe to turn left
-	//        out->printf("Too fast to the left!, blindspot \n");
-	//    	}
-	//    }
 
 	else {
 		leftSafety = 0;
 	}
 
+
+
 }
 
 void Wheelchair::imuRead_thread() {
+	printObstacle();
 	currAngularVelocity = imu->gyro_z(); //Current angular velocity from IMU
-	angle = imu->yaw() * 3.14159 / 180; 	//from IMU, in rads
-	arcLength = WheelchairRadius * currAngularVelocity *
-		currAngularVelocity / (2 * maxAngularDeceleration); //S = r*theta, in cm
+	//angle = imu->yaw() * 3.14159 / 180; 	//from IMU, in rads
+	//arcLength = WheelchairRadius * currAngularVelocity *
+		//currAngularVelocity / (2 * maxAngularDeceleration); //S = r*theta, in cm
 															 // Stopping distance from the wall
+}
+
+void Wheelchair::stopChairRight() {
+	if (y->read() < def) {
+		y->write(def);
+		rightSafety = 1;			//Not safe to turn left
+			//out->printf("Detecting wall to the left!\n");
+		out->printf("currAngularVelocity %f\n", currAngularVelocity);
+	}
 }
 
 void Wheelchair::rightSideSafety_thread() {
@@ -257,72 +254,51 @@ void Wheelchair::rightSideSafety_thread() {
 
 	ToFV[8] = (*(ToF + 8))->readFromOneSensor(); //RFS
 	ToFV[1] = (*(ToF + 1))->readFromOneSensor(); //RBS
-	ToFV[12] = (*(ToF + 12))->readFromOneSensor(); //RFA
+	//ToFV[12] = (*(ToF + 12))->readFromOneSensor(); //RFA
 
 	//out -> printf("LFS: %d, LFF %d, LFA %d, LFD %d\n", *LFS, *LFF, *LFA, *LFD);
 
-	if ((*RFS <= minWallLengthRight) || (*RBS <= minWallLengthRight)) {
-		if (y->read() < def) {
-			y->write(def);
-			rightSafety = 1;
-			//out->printf("CASE 1(A): Detecting wall to the right!\n");
-		}
+	if (*RFS <= minWallLengthRight) {
+		out->printf("TOO CLOSE SAFETY");
+		stopChairRight();
 	}
 
-	//CASE 1 (B)
-	else if ((*RFA) <= 100) {	//Number` needs to be changed based on testing
-		if (y->read() < def) {
-			y->write(def);
-			rightSafety = 1;
-			//out->printf("RFA: %d\n", *RFA);
-			//out->printf("CASE 1(B): Blindspot on the right side\n");
-		}
+	//speed 1
+	else if (currAngularVelocity <= -0.3 && currAngularVelocity > -0.6 && *RFS <= 250) {
+		out->printf("SPEED 1 SAFETY: RFS -> %d\n", *RFS);
+		stopChairRight();
 	}
 
-	//CASE 3):
-	else if (((*RFS) / 10 <= arcLength + minWallLengthRight / 10 + 13) || (*RFF) <= 230) {
-		if (y->read() < def) {
-			y->write(def);
-			//out->printf("CASE 2\n");
-			rightSafety = 1; 		//Not safe to turn RIGHT
-
-		}
-		//out->printf("CASE 3 RIGHT\n");
+	//speed 2
+	else if (currAngularVelocity <= -0.6 && currAngularVelocity > -0.82 && *RFS <= 350) {
+		out->printf("SPEED 2 SAFETY: RFS -> %d\n", *RFS);
+		stopChairRight();
 	}
 
-	// //CASE 2 (A)
-	// else if((currAngularVelocity * currAngularVelocity > 2 *
-	//     maxAngularDeceleration * angle) && ((*RFS)/10 <= arcLength + minWallLengthRight/10)) {
-	// 	if(y->read() < def) {
-	// 	y->write(def);
-	// 	rightSafety = 1; 		//Not safe to turn right
-	//     out->printf("Too fast to the right!\n");
-	// 	}
-	// }
+	//speed 3
+	else if (currAngularVelocity <= -0.82 && currAngularVelocity > -1.05 && *RFS <= 450) {
+		out->printf("SPEED 3 SAFETY: RFS -> %d\n", *RFS);
+		stopChairRight();
+	}
 
-	// //CASE 2 (B)
-	// else if((currAngularVelocity * currAngularVelocity > 2 *
-	//     maxAngularDeceleration * angle) && ((*RBS)/10 <= arcLength + minWallLengthRight/10)) {
-	// 	if(y->read() < def) {
-	// 	    	    	    	                y->write(def);
-	// 	rightSafety = 1; 		//Not safe to turn right
-	//     out-> printf("Too fast to the right! Back right area danger\n");
-	// }
-	// }
+	//speed 4
+	else if (currAngularVelocity <= -1.05 && currAngularVelocity > -1.25 && *RFS <= 550) {
+		out->printf("SPEED 4 SAFETY: RFS -> %d\n", *RFS);
+		stopChairRight();
+	}
 
-	// //CASE 2 (C)
-	// else if((currAngularVelocity * currAngularVelocity > 2 *
-	//     maxAngularDeceleration * angle) && ((*RFA)/10 <= arcLength + minWallLengthRight/10)) {
-	// 	if(y->read() < def) {
-	// 	    	    	    	                y->write(def);
-	// 	rightSafety = 1; 		//Not safe to turn right
-	//     out->printf("Too fast to the right!, blindspot \n");
-	// 	}
-	// }
+	//speed 5
+	else if (currAngularVelocity <= -1.25 && *LFS <= 650) {
+		out->printf("SPEED 5 SAFETY: RFS -> %d\n", *RFS);
+		stopChairRight();
+	}
+
 
 	else {
 		rightSafety = 0;
 	}
+
+
 }
 
 
@@ -811,6 +787,21 @@ void Wheelchair::pid_twistV()
 		 //  out->printf("Velosity: %f, Velosity2: %f, temporV %f, temporS %f, posM %f, posS %f \r\n", curr_vel, curr_velS, temporV, temporS, vOut, curr_posS);
 		Wheelchair::odomMsg();
 		wait(.005);                                                                      // Small delay (milliseconds)
+	}
+}
+
+//prints out where an obstacle is detected, called from the imu read thread for now
+void Wheelchair::printObstacle() {
+	bool printObsMode = false;
+	if (printObsMode == true) {
+		if (*LFF < 300) { out->printf("Obstacle detected in front of the front-left corner\n"); }
+		if (*LFS < 300) { out->printf("Obstacle detected to the side of the front-left corner\n"); }
+		if (*LBB < 300) { out->printf("Obstacle detected to the back of the back-left corner\n"); }
+		if (*LBS < 300) { out->printf("Obstacle detected to the side of the back-left corner\n"); }
+		if (*RFF < 300) { out->printf("Obstacle detected to the front of the front-right corner\n"); }
+		if (*RFS < 300) { out->printf("Obstacle detected to the side of the front-right corner\n"); }
+		if (*RBB < 300) { out->printf("Obstacle detected to the back of the back-right corner\n"); }
+		if (*RBS < 300) { out->printf("Obstacle detected to the side of the back-right corner\n "); }
 	}
 }
 void Wheelchair::pid_wall_follower()

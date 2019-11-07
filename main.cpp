@@ -143,6 +143,9 @@ Thread rightSideSafety;
 Thread ledgeSafety;
 //---------------------------------------
 
+Thread accel_timing;
+
+
 Thread emergencyButton;                                         // Thread to check button state and reset device
 Wheelchair smart(xDir,yDir, &pc, &IMU_t, &wheel, &wheelS, ToFT, &e_button);    // Initialize wheelchair object
 
@@ -170,6 +173,7 @@ int main(void)
     queue.call_every(SAMPLEFREQ, &smart, &Wheelchair::leftSideSafety_thread); 
     queue.call_every(SAMPLEFREQ, &smart, &Wheelchair::rightSideSafety_thread);
     queue.call_every(SAMPLEFREQ, &smart, &Wheelchair::ledgeSafety_thread);
+    //queue.call_every(SAMPLEFREQ, &smart, &Wheelchair::accel_timing);
     //---------------------------------------------------------------------      
 
     //queue.call_every(200, rosCom_thread);                                     // Sets up sampling frequency of the ROS com thread
@@ -180,13 +184,14 @@ int main(void)
     velocity.start(callback(&queue, &EventQueue::dispatch_forever));            // Starts running the velocity thread
 
     //-------------------------------------------------------------
-    imuRead.start(callback(&queue, &EventQueue::dispatch_forever));    
+    imuRead.start(callback(&queue, &EventQueue::dispatch_forever));
     forwardSafety.start(callback(&queue, &EventQueue::dispatch_forever));
     leftSideSafety.start(callback(&queue, &EventQueue::dispatch_forever));
     rightSideSafety.start(callback(&queue, &EventQueue::dispatch_forever));
     backwardSafety.start(callback(&queue, &EventQueue::dispatch_forever)); 
     ledgeSafety.start(callback(&queue, &EventQueue::dispatch_forever));        
     //---------------------------------------------------------------
+    //accel_timing.start(callback(&queue, &EventQueue::dispatch_forever));  
 
     // Starts running the ROS com thread
     //ros_com.start(callback(&queue, &EventQueue::dispatch_forever));           // Starts running the ROS com thread

@@ -36,7 +36,7 @@
 #define Diameter 31.75                  // Diameter of encoder wheel
 #define maxDecelerationSlow 130
 #define maxDecelerationFast 80
-#define linDecelBase 0.3 //meters per second
+#define linDecelBase 0.4 //meters per second
 #define ToFSensorNum 12
 
 /*************************************************************************
@@ -119,13 +119,20 @@ public:
     ************************************************************************ */
     void emergencyButton_thread();
 
-    //---------------------------------------
+    //--------------------------------------- I'll add comments later 
     void imuRead_thread();
     void forwardSafety_thread();
     void rightSideSafety_thread();
     void leftSideSafety_thread();
     void backwardSafety_thread();
     void ledgeSafety_thread();
+    void printObstacle();
+    void accel_timing();
+
+    void stopChairForward();
+    void stopChairBackward();
+    void stopChairLeft();
+    void stopChairRight();
     //--------------------------------------
 
     /*************************************************************************

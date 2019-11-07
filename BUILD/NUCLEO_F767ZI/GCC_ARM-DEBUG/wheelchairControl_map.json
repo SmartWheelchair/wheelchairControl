@@ -4,7 +4,7 @@
         "size": {
             ".data": 6, 
             ".bss": 36, 
-            ".text": 293
+            ".text": 331
         }
     }, 
     {
@@ -43,8 +43,8 @@
         "module": "main.o", 
         "size": {
             ".data": 64, 
-            ".bss": 8001, 
-            ".text": 5032
+            ".bss": 8197, 
+            ".text": 5064
         }
     }, 
     {
@@ -115,8 +115,8 @@
         "module": "wheelchaircontrol\\BNOWrapper", 
         "size": {
             ".data": 0, 
-            ".bss": 4, 
-            ".text": 8094
+            ".bss": 0, 
+            ".text": 7808
         }
     }, 
     {
@@ -156,13 +156,13 @@
         "size": {
             ".data": 28, 
             ".bss": 3632, 
-            ".text": 6635
+            ".text": 7763
         }
     }, 
     {
         "summary": {
-            "static_ram": 37568, 
-            "total_flash": 156987
+            "static_ram": 37760, 
+            "total_flash": 157899
         }
     }
 ]
